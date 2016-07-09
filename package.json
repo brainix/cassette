@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/brainix/cassette/issues"
   },
-  "homepage": "https://github.com/brainix/cassette#readme"
+  "homepage": "https://github.com/brainix/cassette#readme",
+  "dependencies": {
+    "webpack": "^1.13.1"
+  }
 }
