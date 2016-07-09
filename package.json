@@ -1,0 +1,19 @@
+{
+  "name": "cassette",
+  "version": "1.0.0",
+  "description": "Baby's first React app!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brainix/cassette.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brainix/cassette/issues"
+  },
+  "homepage": "https://github.com/brainix/cassette#readme"
+}
