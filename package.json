@@ -4,6 +4,8 @@
   "description": "Baby's first React app!",
   "main": "index.js",
   "scripts": {
+    "dev": "webpack -d --watch",
+    "build": "webpack -p",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
