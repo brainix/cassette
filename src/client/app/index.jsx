@@ -47,11 +47,35 @@ var App = React.createClass({
         this.serverRequest.abort();
     },
 
-    render: function() {
-        if (this.state.videos.length > this.state.index) {
-            return <Video video={this.state.videos[this.state.index]} />;
+    next: function() {
+        if (this.state.index < this.state.videos.length - 1) {
+            this.setState({index: this.state.index + 1});
+        } else {
+            this.serverRequest = $.get(
+                'https://api.spool.tv/v1/songs',
+                function(result) {
+                    this.setState({
+                        videos: this.state.videos.concat(result.songs),
+                        index: this.state.index + 1
+                    });
+                }.bind(this)
+            );
         }
-        else {
+    },
+
+    prev: function() {
+        if (this.state.index > 0) {
+            this.setState({index: this.state.index - 1});
+        }
+    },
+
+    render: function() {
+        if (this.state.index < this.state.videos.length) {
+            return (
+                <Video video={this.state.videos[this.state.index]}
+                       next={this.next} />
+            );
+        } else {
             return null;
         }
     }
@@ -75,7 +99,8 @@ var Video = React.createClass({
                    loop
                    preload='auto'
                    autoPlay='autoplay'
-                   style={style}>
+                   style={style}
+                   onClick={this.props.next}>
             </video>
         );
     }
