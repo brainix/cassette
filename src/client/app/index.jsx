@@ -70,10 +70,20 @@ var App = React.createClass({
     },
 
     render: function() {
-        if (this.state.index < this.state.videos.length) {
+        if (this.state.index < this.state.videos.length - 1) {
             return (
-                <Video video={this.state.videos[this.state.index]}
-                       next={this.next} />
+                <div>
+                    <Video video={this.state.videos[this.state.index]}
+                           next={this.next} />
+                    <Video video={this.state.videos[this.state.index + 1]} />
+                </div>
+            );
+        } else if (this.state.index < this.state.videos.length) {
+            return (
+                <div>
+                    <Video video={this.state.videos[this.state.index]}
+                           next={this.next} />
+                </div>
             );
         } else {
             return null;
@@ -85,24 +95,34 @@ var App = React.createClass({
 
 var Video = React.createClass({
     render: function() {
-        var style = {
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            cursor: 'pointer'
-        };
-        return (
-            <video src={this.props.video.mp4_url}
-                   loop
-                   preload='auto'
-                   autoPlay='autoplay'
-                   style={style}
-                   onClick={this.props.next}>
-            </video>
-        );
+        if (this.props.next) {
+            var style = {
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                cursor: 'pointer'
+            };
+            return (
+                <video src={this.props.video.mp4_url}
+                       loop
+                       preload='auto'
+                       autoPlay='autoplay'
+                       style={style}
+                       onClick={this.props.next}>
+                </video>
+            );
+        } else {
+            var style = {display: 'none'};
+            return (
+                <video src={this.props.video.mp4_url}
+                       preload='auto'
+                       style={style}>
+                </video>
+            );
+        }
     }
 });
 
