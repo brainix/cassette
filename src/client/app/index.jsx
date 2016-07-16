@@ -20,13 +20,57 @@
 
 
 
+import $ from 'jquery';
 import React from 'react';
 import {render} from 'react-dom';
 
-class App extends React.Component {
-    render() {
-        return <p>Hello, World!</p>;
+
+
+var App = React.createClass({
+    getInitialState: function() {
+        return {
+            videos: [],
+            index: 0
+        };
+    },
+
+    componentDidMount: function() {
+        this.serverRequest = $.get(
+            'https://api.spool.tv/v1/songs',
+            function(result) {
+                this.setState({videos: result.songs});
+            }.bind(this)
+        );
+    },
+
+    componentWillUnmount: function() {
+        this.serverRequest.abort();
+    },
+
+    render: function() {
+        if (this.state.videos.length > this.state.index) {
+            return <Video video={this.state.videos[this.state.index]} />;
+        }
+        else {
+            return null;
+        }
     }
-}
+});
+
+
+
+var Video = React.createClass({
+    render: function() {
+        return (
+            <video src={this.props.video.mp4_url}
+                   loop
+                   preload='auto'
+                   autoPlay='autoplay'>
+            </video>
+        );
+    }
+});
+
+
 
 render(<App/>, document.getElementById('app'));
