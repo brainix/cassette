@@ -61,11 +61,21 @@ var App = React.createClass({
 
 var Video = React.createClass({
     render: function() {
+        var style = {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            cursor: 'pointer'
+        };
         return (
             <video src={this.props.video.mp4_url}
                    loop
                    preload='auto'
-                   autoPlay='autoplay'>
+                   autoPlay='autoplay'
+                   style={style}>
             </video>
         );
     }
