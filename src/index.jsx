@@ -26,33 +26,40 @@ import {render} from 'react-dom';
 
 
 
-var App = React.createClass({
-    getInitialState: function() {
-        return {
+const API = process.env.NODE_ENV == 'production' ? 'https://api.spool.tv/v1' : 'http://localhost:5000/v1';
+
+
+
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
             videos: [],
             index: 0
         };
-    },
+        this.next = this.next.bind(this);
+        this.prev = this.prev.bind(this);
+    }
 
-    componentDidMount: function() {
+    componentDidMount() {
         this.serverRequest = $.get(
-            'https://api.spool.tv/v1/songs',
+            API + '/songs',
             function(result) {
                 this.setState({videos: result.songs});
             }.bind(this)
         );
-    },
+    }
 
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         this.serverRequest.abort();
-    },
+    }
 
-    next: function() {
+    next() {
         if (this.state.index < this.state.videos.length - 1) {
             this.setState({index: this.state.index + 1});
         } else {
             this.serverRequest = $.get(
-                'https://api.spool.tv/v1/songs',
+                API + '/songs',
                 function(result) {
                     this.setState({
                         videos: this.state.videos.concat(result.songs),
@@ -61,15 +68,15 @@ var App = React.createClass({
                 }.bind(this)
             );
         }
-    },
+    }
 
-    prev: function() {
+    prev() {
         if (this.state.index > 0) {
             this.setState({index: this.state.index - 1});
         }
-    },
+    }
 
-    render: function() {
+    render() {
         if (this.state.index < this.state.videos.length - 1) {
             return (
                 <div>
@@ -89,12 +96,12 @@ var App = React.createClass({
             return null;
         }
     }
-});
+}
 
 
 
-var Video = React.createClass({
-    render: function() {
+class Video extends React.Component {
+    render() {
         if (this.props.next) {
             var style = {
                 position: 'fixed',
@@ -124,7 +131,7 @@ var Video = React.createClass({
             );
         }
     }
-});
+}
 
 
 
