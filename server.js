@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
- |  webpack.config.js                                                        |
+ |  server.js                                                                |
  |                                                                           |
  |  Copyright © 2016, Rajiv Bakulesh Shah, original author.                  |
  |                                                                           |
@@ -20,47 +20,10 @@
 
 
 
-const path = require('path');
-const webpack = require('webpack');
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 8080;
 
-const SRC_DIR = path.resolve(__dirname, 'src');
-const BUILD_DIR = path.resolve(__dirname, 'public');
-
-const config = {
-    entry: SRC_DIR + '/index.jsx',
-    output: {
-        path: BUILD_DIR,
-        filename: 'bundle.js',
-        publicPath: '/public/'
-    },
-    plugins: (function() {
-        var plugins = [];
-        if (process.env.NODE_ENV == 'production') {
-            plugins.push(
-                new webpack.optimize.DedupePlugin(),
-                new webpack.optimize.UglifyJsPlugin({
-                    minimize: true,
-                    compress: {warnings: false}
-                })
-            );
-        } else {
-            plugins.push(
-                new webpack.optimize.OccurenceOrderPlugin(),
-                new webpack.HotModuleReplacementPlugin(),
-                new webpack.NoErrorsPlugin()
-            );
-        }
-        return plugins;
-    }()),
-    module: {
-        loaders: [
-            {
-                test: /\.jsx?/,
-                include: SRC_DIR,
-                loader: 'babel'
-            }
-        ]
-    }
-};
-
-module.exports = config;
+app.use(express.static(__dirname + '/'));
+app.listen(port);
+console.log(`Listening at: http://127.0.0.1:${port} (${process.pid})`);
