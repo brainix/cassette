@@ -26,24 +26,25 @@ import {render} from 'react-dom';
 
 
 
-const API = process.env.NODE_ENV == 'production' ? 'https://api.spool.tv/v1' : 'http://localhost:5000/v1';
-
-
-
 class App extends React.Component {
     constructor(props) {
         super(props);
+        if (process.env.NODE_ENV == 'production') {
+            this.api = 'https://api.spool.tv/v1';
+        } else {
+            this.api = 'http://localhost:5000/v1';
+        }
+        this.next = this.next.bind(this);
+        this.prev = this.prev.bind(this);
         this.state = {
             videos: [],
             index: 0
         };
-        this.next = this.next.bind(this);
-        this.prev = this.prev.bind(this);
     }
 
     componentDidMount() {
         this.serverRequest = $.get(
-            API + '/songs',
+            this.api + '/songs',
             function(result) {
                 this.setState({videos: result.songs});
             }.bind(this)
@@ -59,7 +60,7 @@ class App extends React.Component {
             this.setState({index: this.state.index + 1});
         } else {
             this.serverRequest = $.get(
-                API + '/songs',
+                this.api + '/songs',
                 function(result) {
                     this.setState({
                         videos: this.state.videos.concat(result.songs),
@@ -103,7 +104,8 @@ class App extends React.Component {
 class Video extends React.Component {
     render() {
         if (this.props.next) {
-            var style = {
+            document.title = `Spool - ${this.props.video.artist} - ${this.props.video.song}`
+            const style = {
                 position: 'fixed',
                 top: 0,
                 left: 0,
@@ -122,7 +124,7 @@ class Video extends React.Component {
                 </video>
             );
         } else {
-            var style = {display: 'none'};
+            const style = {display: 'none'};
             return (
                 <video src={this.props.video.mp4_url}
                        preload='auto'
