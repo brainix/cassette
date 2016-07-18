@@ -115,6 +115,18 @@ class App extends React.Component {
 
 
 class Video extends React.Component {
+    componentDidMount() {
+        document.addEventListener(
+            'visibilitychange',
+            this.handleVisibilityChange.bind(this)
+        );
+    }
+
+    handleVisibilityChange() {
+        var video = document.getElementsByTagName('video')[0];
+        video[document.hidden ? 'pause' : 'play']();
+    }
+
     render() {
         if (this.props.next) {
             document.title = `Spool - ${this.props.video.artist} - ${this.props.video.song}`
