@@ -29,11 +29,15 @@ import {render} from 'react-dom';
 class App extends React.Component {
     constructor(props) {
         super(props);
+
         if (process.env.NODE_ENV == 'production') {
-            this.api = 'https://api.spool.tv/v1';
+            this.API = 'https://api.spool.tv/v1';
         } else {
-            this.api = 'http://localhost:5000/v1';
+            this.API = 'http://localhost:5000/v1';
         }
+        this.NEXT_KEYS = [39];
+        this.PREV_KEYS = [37];
+
         this.next = this.next.bind(this);
         this.prev = this.prev.bind(this);
         this.state = {
@@ -44,15 +48,24 @@ class App extends React.Component {
 
     componentDidMount() {
         this.serverRequest = $.get(
-            this.api + '/songs',
+            this.API + '/songs',
             function(result) {
                 this.setState({videos: result.songs});
             }.bind(this)
         );
+        document.addEventListener('keyup', this.handleKeyUp.bind(this));
     }
 
     componentWillUnmount() {
         this.serverRequest.abort();
+    }
+
+    handleKeyUp(e) {
+        if (this.NEXT_KEYS.indexOf(e.which) != -1) {
+            this.next();
+        } else if (this.PREV_KEYS.indexOf(e.which) != -1) {
+            this.prev();
+        }
     }
 
     next() {
@@ -60,7 +73,7 @@ class App extends React.Component {
             this.setState({index: this.state.index + 1});
         } else {
             this.serverRequest = $.get(
-                this.api + '/songs',
+                this.API + '/songs',
                 function(result) {
                     this.setState({
                         videos: this.state.videos.concat(result.songs),
