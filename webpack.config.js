@@ -31,7 +31,7 @@ const config = {
     output: {
         path: BUILD_DIR,
         filename: 'bundle.js',
-        publicPath: '/public/'
+        publicPath: '/'
     },
     plugins: (function() {
         var plugins = [];
@@ -60,7 +60,7 @@ const config = {
     module: {
         loaders: [
             {
-                test: /\.jsx?/,
+                test: /\.jsx?$/,
                 include: SRC_DIR,
                 loader: 'babel'
             }

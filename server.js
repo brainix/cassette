@@ -37,6 +37,6 @@ if (process.env.NODE_ENV !== 'production') {
     app.use(webpackHotMiddleware(compiler));
 }
 
-app.use(express.static(__dirname + '/'));
+app.use(express.static(__dirname + '/public'));
 app.listen(port);
 console.log(`Listening at: http://127.0.0.1:${port} (${process.pid})`);
