@@ -21,20 +21,24 @@
 
 
 const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const webpack = require('webpack');
 
 const SRC_DIR = path.resolve(__dirname, 'src');
 const BUILD_DIR = path.resolve(__dirname, 'public');
 
-const config = {
-    entry: SRC_DIR + '/index.jsx',
+module.exports = {
+    entry: [
+        SRC_DIR + '/style.scss',
+        SRC_DIR + '/index.jsx'
+    ],
     output: {
         path: BUILD_DIR,
         filename: 'bundle.js',
         publicPath: '/'
     },
     plugins: (function() {
-        var plugins = [];
+        var plugins = [new ExtractTextPlugin('style.css', {allChunks: true})];
         if (process.env.NODE_ENV == 'production') {
             plugins.push(
                 new webpack.DefinePlugin({
@@ -60,6 +64,14 @@ const config = {
     module: {
         loaders: [
             {
+                test: /\.scss$/,
+                include: SRC_DIR,
+                loader: ExtractTextPlugin.extract(
+                    'style-loader',
+                    'css-loader!autoprefixer-loader!sass-loader'
+                )
+            },
+            {
                 test: /\.jsx?$/,
                 include: SRC_DIR,
                 loader: 'babel'
@@ -67,5 +79,3 @@ const config = {
         ]
     }
 };
-
-module.exports = config;
