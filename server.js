@@ -24,6 +24,19 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 8080;
 
+if (process.env.NODE_ENV !== 'production') {
+    const webpackDevMiddleware = require('webpack-dev-middleware');
+    const webpackHotMiddleware = require('webpack-hot-middleware');
+    const webpack = require('webpack');
+    const config = require('./webpack.config.js');
+    const compiler = webpack(config);
+    app.use(webpackDevMiddleware(compiler, {
+        publicPath: config.output.publicPath,
+        stats: {colors: true}
+    }));
+    app.use(webpackHotMiddleware(compiler));
+}
+
 app.use(express.static(__dirname + '/'));
 app.listen(port);
 console.log(`Listening at: http://127.0.0.1:${port} (${process.pid})`);
