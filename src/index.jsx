@@ -27,15 +27,7 @@ import Player from './Player.jsx';
 
 
 
-class App extends React.Component {
-    render() {
-        return (
-            <div>
-                <Player/>
-            </div>
-        );
-    }
-}
+const App = () => <Player state='playing' />;
 
 
 

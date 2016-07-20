@@ -36,11 +36,9 @@ class Player extends React.Component {
         } else {
             this.API = 'http://localhost:5000/v1';
         }
-        this.NEXT_KEYS = [39];
-        this.PREV_KEYS = [37];
+        [this.NEXT_KEYS, this.PREV_KEYS] = [[39], [37]];
 
-        this.next = this.next.bind(this);
-        this.prev = this.prev.bind(this);
+        [this.next, this.prev] = [this.next.bind(this), this.prev.bind(this)];
         this.state = {videos: [], index: null};
     }
 
@@ -54,12 +52,12 @@ class Player extends React.Component {
         document.addEventListener('keyup', this.onKeyUp.bind(this));
     }
 
-    componentWillUnmount() {
-        this.serverRequest.abort();
-    }
-
     shouldComponentUpdate(nextProps, nextState) {
         return nextState.index != this.state.index;
+    }
+
+    componentWillUnmount() {
+        this.serverRequest.abort();
     }
 
     onKeyUp(e) {
@@ -97,30 +95,26 @@ class Player extends React.Component {
     }
 
     render() {
-        if (this.state.index === null) {
-            return null;
-        } else if (this.state.index >= this.state.videos.length) {
-            return null;
-        } else if (this.state.index == this.state.videos.length - 1) {
-            return (
-                <div>
-                    <Video
-                        video={this.state.videos[this.state.index]}
-                        next={this.next}
-                    />
-                </div>
-            );
-        } else {
-            return (
-                <div>
-                    <Video
-                        video={this.state.videos[this.state.index]}
-                        next={this.next}
-                    />
-                    <Video video={this.state.videos[this.state.index + 1]} />
-                </div>
+        var states, videos = [];
+        if (this.state.index === null || this.state.index > this.state.videos.length - 1) {
+            states = [];
+        } else if (this.state.index == this.state.videos.length - 1 || this.props.state == 'background') {
+            states = [this.props.state];
+        }
+        else {
+            states = ['playing', 'buffering'];
+        }
+        for (var index = 0; index < states.length; index++) {
+            videos.push(
+                <Video
+                    key={index}
+                    video={this.state.videos[this.state.index + index]}
+                    state={states[index]}
+                    next={this.next}
+                />
             );
         }
+        return <div>{videos}</div>;
     }
 }
 
@@ -132,6 +126,10 @@ class Video extends React.Component {
             'visibilitychange',
             this.onVisibilityChange.bind(this)
         );
+        if (this.props.state == 'background') {
+            var video = document.getElementsByTagName('video')[0];
+            video.volume = 0;
+        }
     }
 
     onVisibilityChange() {
@@ -142,29 +140,32 @@ class Video extends React.Component {
     }
 
     render() {
-        if (this.props.next) {
-            document.title = `Spool - ${this.props.video.artist} - ${this.props.video.song}`
-            return (
-                <video
-                    src={this.props.video.mp4_url}
-                    loop
-                    preload='auto'
-                    autoPlay='autoplay'
-                    onClick={this.props.next}
-                >
-                </video>
-            );
-        } else {
-            const style = {display: 'none'};
-            return (
-                <video
-                    src={this.props.video.mp4_url}
-                    preload='auto'
-                    style={style}
-                >
-                </video>
-            );
+        var autoPlay, onClick, style;
+        switch (this.props.state) {
+            case 'playing':
+                document.title = `Spool - ${this.props.video.artist} - ${this.props.video.song}`;
+                [autoPlay, onClick, style] = ['autoplay', this.props.next, null];
+                break;
+            case 'background':
+                [autoPlay, onClick, style] = ['autoplay', null, null];
+                break;
+            case 'buffering':
+                [autoPlay, onClick, style] = [null, null, {display: 'none'}];
+                break;
+            default:
+                [autoPlay, onClick, style] = [null, null, {display: 'none'}];
         }
+        return (
+            <video
+                src={this.props.video.mp4_url}
+                loop
+                preload='auto'
+                autoPlay={autoPlay}
+                style={style}
+                onClick={onClick}
+            >
+            </video>
+        );
     }
 }
 
