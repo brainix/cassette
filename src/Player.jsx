@@ -30,6 +30,7 @@ class Player extends React.Component {
     constructor(props) {
         super(props);
 
+        this.KATIE_NUM = 60;
         if (process.env.NODE_ENV == 'production') {
             this.API = 'https://api.spool.tv/v1';
         } else {
@@ -40,27 +41,28 @@ class Player extends React.Component {
 
         this.next = this.next.bind(this);
         this.prev = this.prev.bind(this);
-        this.state = {
-            videos: [],
-            index: 0
-        };
+        this.state = {videos: [], index: null};
     }
 
     componentDidMount() {
         this.serverRequest = $.get(
             this.API + '/songs',
             function(result) {
-                this.setState({videos: result.songs});
+                this.setState({videos: result.songs, index: 0});
             }.bind(this)
         );
-        document.addEventListener('keyup', this.handleKeyUp.bind(this));
+        document.addEventListener('keyup', this.onKeyUp.bind(this));
     }
 
     componentWillUnmount() {
         this.serverRequest.abort();
     }
 
-    handleKeyUp(e) {
+    shouldComponentUpdate(nextProps, nextState) {
+        return nextState.index != this.state.index;
+    }
+
+    onKeyUp(e) {
         if (this.NEXT_KEYS.indexOf(e.which) != -1) {
             this.next();
         } else if (this.PREV_KEYS.indexOf(e.which) != -1) {
@@ -69,29 +71,46 @@ class Player extends React.Component {
     }
 
     next() {
-        if (this.state.index < this.state.videos.length - 1) {
-            this.setState({index: this.state.index + 1});
-        } else {
-            this.serverRequest = $.get(
-                this.API + '/songs',
-                function(result) {
-                    this.setState({
-                        videos: this.state.videos.concat(result.songs),
-                        index: this.state.index + 1
-                    });
-                }.bind(this)
-            );
+        if (this.state.index !== null ) {
+            if (this.state.index < this.state.videos.length - 1) {
+                this.setState({index: this.state.index + 1});
+            }
+            if (this.state.index >= this.state.videos.length - this.KATIE_NUM / 2) {
+                this.serverRequest = $.get(
+                    this.API + '/songs',
+                    function(result) {
+                        this.setState({
+                            videos: this.state.videos.concat(result.songs),
+                        });
+                    }.bind(this)
+                );
+            }
         }
     }
 
     prev() {
-        if (this.state.index > 0) {
-            this.setState({index: this.state.index - 1});
+        if (this.state.index !== null ) {
+            if (this.state.index > 0) {
+                this.setState({index: this.state.index - 1});
+            }
         }
     }
 
     render() {
-        if (this.state.index < this.state.videos.length - 1) {
+        if (this.state.index === null) {
+            return null;
+        } else if (this.state.index >= this.state.videos.length) {
+            return null;
+        } else if (this.state.index == this.state.videos.length - 1) {
+            return (
+                <div>
+                    <Video
+                        video={this.state.videos[this.state.index]}
+                        next={this.next}
+                    />
+                </div>
+            );
+        } else {
             return (
                 <div>
                     <Video
@@ -101,17 +120,6 @@ class Player extends React.Component {
                     <Video video={this.state.videos[this.state.index + 1]} />
                 </div>
             );
-        } else if (this.state.index < this.state.videos.length) {
-            return (
-                <div>
-                    <Video
-                        video={this.state.videos[this.state.index]}
-                        next={this.next}
-                    />
-                </div>
-            );
-        } else {
-            return null;
         }
     }
 }
@@ -122,11 +130,11 @@ class Video extends React.Component {
     componentDidMount() {
         document.addEventListener(
             'visibilitychange',
-            this.handleVisibilityChange.bind(this)
+            this.onVisibilityChange.bind(this)
         );
     }
 
-    handleVisibilityChange() {
+    onVisibilityChange() {
         // If this event handler is even called, then we must have a Video
         // component on the page, so we must have a video element on the page.
         var video = document.getElementsByTagName('video')[0];
