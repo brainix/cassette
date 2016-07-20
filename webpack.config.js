@@ -68,7 +68,7 @@ module.exports = {
                 include: SRC_DIR,
                 loader: ExtractTextPlugin.extract(
                     'style-loader',
-                    'css-loader!autoprefixer-loader!sass-loader'
+                    'css-loader!postcss-loader!sass-loader'
                 )
             },
             {
