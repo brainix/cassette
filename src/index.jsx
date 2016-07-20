@@ -20,143 +20,20 @@
 
 
 
-import $ from 'jquery';
 import React from 'react';
 import {render} from 'react-dom';
+
+import Player from './Player.jsx';
 
 
 
 class App extends React.Component {
-    constructor(props) {
-        super(props);
-
-        if (process.env.NODE_ENV == 'production') {
-            this.API = 'https://api.spool.tv/v1';
-        } else {
-            this.API = 'http://localhost:5000/v1';
-        }
-        this.NEXT_KEYS = [39];
-        this.PREV_KEYS = [37];
-
-        this.next = this.next.bind(this);
-        this.prev = this.prev.bind(this);
-        this.state = {
-            videos: [],
-            index: 0
-        };
-    }
-
-    componentDidMount() {
-        this.serverRequest = $.get(
-            this.API + '/songs',
-            function(result) {
-                this.setState({videos: result.songs});
-            }.bind(this)
-        );
-        document.addEventListener('keyup', this.handleKeyUp.bind(this));
-    }
-
-    componentWillUnmount() {
-        this.serverRequest.abort();
-    }
-
-    handleKeyUp(e) {
-        if (this.NEXT_KEYS.indexOf(e.which) != -1) {
-            this.next();
-        } else if (this.PREV_KEYS.indexOf(e.which) != -1) {
-            this.prev();
-        }
-    }
-
-    next() {
-        if (this.state.index < this.state.videos.length - 1) {
-            this.setState({index: this.state.index + 1});
-        } else {
-            this.serverRequest = $.get(
-                this.API + '/songs',
-                function(result) {
-                    this.setState({
-                        videos: this.state.videos.concat(result.songs),
-                        index: this.state.index + 1
-                    });
-                }.bind(this)
-            );
-        }
-    }
-
-    prev() {
-        if (this.state.index > 0) {
-            this.setState({index: this.state.index - 1});
-        }
-    }
-
     render() {
-        if (this.state.index < this.state.videos.length - 1) {
-            return (
-                <div>
-                    <Video video={this.state.videos[this.state.index]}
-                           next={this.next} />
-                    <Video video={this.state.videos[this.state.index + 1]} />
-                </div>
-            );
-        } else if (this.state.index < this.state.videos.length) {
-            return (
-                <div>
-                    <Video video={this.state.videos[this.state.index]}
-                           next={this.next} />
-                </div>
-            );
-        } else {
-            return null;
-        }
-    }
-}
-
-
-
-class Video extends React.Component {
-    componentDidMount() {
-        document.addEventListener(
-            'visibilitychange',
-            this.handleVisibilityChange.bind(this)
+        return (
+            <div>
+                <Player/>
+            </div>
         );
-    }
-
-    handleVisibilityChange() {
-        var video = document.getElementsByTagName('video')[0];
-        video[document.hidden ? 'pause' : 'play']();
-    }
-
-    render() {
-        if (this.props.next) {
-            document.title = `Spool - ${this.props.video.artist} - ${this.props.video.song}`
-            const style = {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                cursor: 'pointer'
-            };
-            return (
-                <video src={this.props.video.mp4_url}
-                       loop
-                       preload='auto'
-                       autoPlay='autoplay'
-                       style={style}
-                       onClick={this.props.next}>
-                </video>
-            );
-        } else {
-            const style = {display: 'none'};
-            return (
-                <video src={this.props.video.mp4_url}
-                       preload='auto'
-                       style={style}>
-                </video>
-            );
-        }
     }
 }
 
