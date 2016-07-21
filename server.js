@@ -21,6 +21,8 @@
 
 
 const express = require('express');
+const path = require('path');
+
 const app = express();
 const port = process.env.PORT || 8080;
 
@@ -38,5 +40,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 app.use(express.static(__dirname + '/public'));
+app.get('*', function(request, response) {
+    response.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+});
 app.listen(port);
 console.log(`Listening at: http://127.0.0.1:${port} (${process.pid})`);

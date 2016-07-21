@@ -22,12 +22,33 @@
 
 import React from 'react';
 import {render} from 'react-dom';
+import {Router, Route, browserHistory} from 'react-router';
 
 import Player from './Player.jsx';
 
 
 
-const App = () => <Player state='playing' />;
+class App extends React.Component {
+    render() {
+        return (
+            <Router history={browserHistory}>
+                <Route path='/' component={Home} />
+                <Route path='/:artistId/:songId' component={Home} />
+                <Route path='/wtf' component={About} />
+                <Route path='*' component={NotFound} />
+            </Router>
+        );
+    }
+}
+
+const Home = (props) => (
+    <Player
+        state='playing'
+        artistId={props.params.artistId}
+        songId={props.params.songId}
+    />);
+const About = () => <Player state='background' />;
+const NotFound = () => <Player state='background' />;
 
 
 

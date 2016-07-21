@@ -23,6 +23,7 @@
 import $ from 'jquery';
 import React from 'react';
 import {render} from 'react-dom';
+import {browserHistory} from 'react-router';
 
 
 
@@ -43,12 +44,17 @@ class Player extends React.Component {
     }
 
     componentDidMount() {
-        this.serverRequest = $.get(
-            this.API + '/songs',
-            function(result) {
-                this.setState({videos: result.songs, index: 0});
-            }.bind(this)
-        );
+        if (this.props.artistId && this.props.songId) {
+            this.serverRequest = $.get(
+                this.API + `/artists/${this.props.artistId}/songs/${this.props.songId}`,
+                function(result) {
+                    this.setState({videos: [result.songs[0]]});
+                    this.fetch(true);
+                }.bind(this)
+            );
+        } else {
+            this.fetch(true);
+        }
         document.addEventListener('keyup', this.onKeyUp.bind(this));
     }
 
@@ -68,20 +74,28 @@ class Player extends React.Component {
         }
     }
 
+    fetch(init) {
+        if (this.serverRequest) {
+            this.serverRequest.abort();
+        }
+        this.serverRequest = $.get(
+            this.API + '/songs',
+            function(result) {
+                this.setState({
+                    videos: this.state.videos.concat(result.songs),
+                    index: init ? 0 : this.state.index
+                });
+            }.bind(this)
+        );
+    }
+
     next() {
         if (this.state.index !== null ) {
             if (this.state.index < this.state.videos.length - 1) {
                 this.setState({index: this.state.index + 1});
             }
             if (this.state.index >= this.state.videos.length - this.KATIE_NUM / 2) {
-                this.serverRequest = $.get(
-                    this.API + '/songs',
-                    function(result) {
-                        this.setState({
-                            videos: this.state.videos.concat(result.songs),
-                        });
-                    }.bind(this)
-                );
+                this.fetch(false);
             }
         }
     }
@@ -122,6 +136,7 @@ class Player extends React.Component {
 
 class Video extends React.Component {
     componentDidMount() {
+        this.update();
         document.addEventListener(
             'visibilitychange',
             this.onVisibilityChange.bind(this)
@@ -132,22 +147,30 @@ class Video extends React.Component {
         }
     }
 
+    componentDidUpdate() {
+        this.update();
+    }
+
     onVisibilityChange() {
-        // If this event handler is even called, then we must have a Video
-        // component on the page, so we must have a video element on the page.
         var video = document.getElementsByTagName('video')[0];
         video[document.hidden ? 'pause' : 'play']();
+    }
+
+    update() {
+        if (this.props.state == 'playing') {
+            browserHistory.replace(`/${this.props.video.artist_id}/${this.props.video.song_id}`);
+            document.title = `Spool - ${this.props.video.artist} - ${this.props.video.song}`;
+        }
     }
 
     render() {
         var autoPlay, onClick, style;
         switch (this.props.state) {
             case 'playing':
-                document.title = `Spool - ${this.props.video.artist} - ${this.props.video.song}`;
-                [autoPlay, onClick, style] = ['autoplay', this.props.next, null];
+                [autoPlay, onClick, style] = ['autoplay', this.props.next, {opacity: '0.8'}];
                 break;
             case 'background':
-                [autoPlay, onClick, style] = ['autoplay', null, null];
+                [autoPlay, onClick, style] = ['autoplay', null, {opacity: '0.4'}];
                 break;
             case 'buffering':
                 [autoPlay, onClick, style] = [null, null, {display: 'none'}];
