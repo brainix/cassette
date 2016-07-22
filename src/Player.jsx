@@ -136,12 +136,15 @@ class Player extends React.Component {
 
 
 class Video extends React.Component {
+    constructor(props) {
+        super(props);
+        this.onClick = this.onClick.bind(this);
+        this.onVisibilityChange = this.onVisibilityChange.bind(this);
+    }
+
     componentDidMount() {
-        this.update();
-        document.addEventListener(
-            'visibilitychange',
-            this.onVisibilityChange.bind(this)
-        );
+        this.updateUrlAndTitle();
+        document.addEventListener('visibilitychange', this.onVisibilityChange);
         if (this.props.state == 'background') {
             var video = document.getElementsByTagName('video')[0];
             video.volume = 0;
@@ -149,7 +152,13 @@ class Video extends React.Component {
     }
 
     componentDidUpdate() {
-        this.update();
+        this.updateUrlAndTitle();
+    }
+
+    onClick() {
+        if (this.props.state == 'playing') {
+            this.props.nextVideo();
+        }
     }
 
     onVisibilityChange() {
@@ -157,7 +166,7 @@ class Video extends React.Component {
         video[document.hidden ? 'pause' : 'play']();
     }
 
-    update() {
+    updateUrlAndTitle() {
         if (this.props.state == 'playing') {
             browserHistory.replace(`/${this.props.video.artist_id}/${this.props.video.song_id}`);
             document.title = `Spool - ${this.props.video.artist} - ${this.props.video.song}`;
@@ -165,36 +174,14 @@ class Video extends React.Component {
     }
 
     render() {
-        var autoPlay, onClick, style;
-        switch (this.props.state) {
-            case 'playing':
-                autoPlay = 'autoplay';
-                onClick = this.props.nextVideo;
-                style = {opacity: '0.8', cursor: 'pointer'};
-                break;
-            case 'background':
-                autoPlay = 'autoplay';
-                onClick = null;
-                style = {opacity: '0.4'};
-                break;
-            case 'buffering':
-                autoPlay = null;
-                onClick = null;
-                style = {display: 'none'};
-                break;
-            default:
-                autoPlay = null;
-                onClick = null;
-                style = {display: 'none'};
-        }
         return (
             <video
+                className={this.props.state}
                 src={this.props.video.mp4_url}
                 loop
                 preload='auto'
-                autoPlay={autoPlay}
-                style={style}
-                onClick={onClick}
+                autoPlay={this.props.state == 'buffering' ? null : 'autoPlay'}
+                onClick={this.onClick}
             >
             </video>
         );
