@@ -46,8 +46,11 @@ const Home = (props) => (
         state='playing'
         artistId={props.params.artistId}
         songId={props.params.songId}
-    />);
+    />
+);
+
 const About = () => <Player state='background' />;
+
 const NotFound = () => <Player state='background' />;
 
 

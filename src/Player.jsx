@@ -39,7 +39,8 @@ class Player extends React.Component {
         }
         [this.NEXT_KEYS, this.PREV_KEYS] = [[39], [37]];
 
-        [this.next, this.prev] = [this.next.bind(this), this.prev.bind(this)];
+        this.nextVideo = this.nextVideo.bind(this);
+        this.prevVideo = this.prevVideo.bind(this);
         this.state = {videos: [], index: null};
     }
 
@@ -49,11 +50,11 @@ class Player extends React.Component {
                 this.API + `/artists/${this.props.artistId}/songs/${this.props.songId}`,
                 function(result) {
                     this.setState({videos: [result.songs[0]]});
-                    this.fetch(true);
+                    this.fetchVideos(true);
                 }.bind(this)
             );
         } else {
-            this.fetch(true);
+            this.fetchVideos(true);
         }
         document.addEventListener('keyup', this.onKeyUp.bind(this));
     }
@@ -68,13 +69,13 @@ class Player extends React.Component {
 
     onKeyUp(e) {
         if (this.NEXT_KEYS.indexOf(e.which) != -1) {
-            this.next();
+            this.nextVideo();
         } else if (this.PREV_KEYS.indexOf(e.which) != -1) {
-            this.prev();
+            this.prevVideo();
         }
     }
 
-    fetch(init) {
+    fetchVideos(init) {
         if (this.serverRequest) {
             this.serverRequest.abort();
         }
@@ -89,19 +90,19 @@ class Player extends React.Component {
         );
     }
 
-    next() {
-        if (this.state.index !== null ) {
+    nextVideo() {
+        if (this.state.index !== null) {
             if (this.state.index < this.state.videos.length - 1) {
                 this.setState({index: this.state.index + 1});
             }
             if (this.state.index >= this.state.videos.length - this.KATIE_NUM / 2) {
-                this.fetch(false);
+                this.fetchVideos(false);
             }
         }
     }
 
-    prev() {
-        if (this.state.index !== null ) {
+    prevVideo() {
+        if (this.state.index !== null) {
             if (this.state.index > 0) {
                 this.setState({index: this.state.index - 1});
             }
@@ -124,7 +125,7 @@ class Player extends React.Component {
                     key={index}
                     video={this.state.videos[this.state.index + index]}
                     state={states[index]}
-                    next={this.next}
+                    nextVideo={this.nextVideo}
                 />
             );
         }
@@ -167,16 +168,24 @@ class Video extends React.Component {
         var autoPlay, onClick, style;
         switch (this.props.state) {
             case 'playing':
-                [autoPlay, onClick, style] = ['autoplay', this.props.next, {opacity: '0.8'}];
+                autoPlay = 'autoplay';
+                onClick = this.props.nextVideo;
+                style = {opacity: '0.8', cursor: 'pointer'};
                 break;
             case 'background':
-                [autoPlay, onClick, style] = ['autoplay', null, {opacity: '0.4'}];
+                autoPlay = 'autoplay';
+                onClick = null;
+                style = {opacity: '0.4'};
                 break;
             case 'buffering':
-                [autoPlay, onClick, style] = [null, null, {display: 'none'}];
+                autoPlay = null;
+                onClick = null;
+                style = {display: 'none'};
                 break;
             default:
-                [autoPlay, onClick, style] = [null, null, {display: 'none'}];
+                autoPlay = null;
+                onClick = null;
+                style = {display: 'none'};
         }
         return (
             <video
