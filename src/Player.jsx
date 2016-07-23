@@ -138,27 +138,16 @@ class Player extends React.Component {
 class Video extends React.Component {
     constructor(props) {
         super(props);
-        this.onClick = this.onClick.bind(this);
         this.onVisibilityChange = this.onVisibilityChange.bind(this);
     }
 
     componentDidMount() {
         this.updateUrlAndTitle();
         document.addEventListener('visibilitychange', this.onVisibilityChange);
-        if (this.props.state == 'background') {
-            var video = document.getElementsByTagName('video')[0];
-            video.volume = 0;
-        }
     }
 
     componentDidUpdate() {
         this.updateUrlAndTitle();
-    }
-
-    onClick() {
-        if (this.props.state == 'playing') {
-            this.props.nextVideo();
-        }
     }
 
     onVisibilityChange() {
@@ -178,10 +167,11 @@ class Video extends React.Component {
             <video
                 className={this.props.state}
                 src={this.props.video.mp4_url}
-                loop
                 preload='auto'
+                loop
                 autoPlay={this.props.state == 'buffering' ? null : 'autoPlay'}
-                onClick={this.onClick}
+                muted={this.props.state != 'playing'}
+                onClick={this.props.state == 'playing' ? this.props.nextVideo : null}
             >
             </video>
         );
