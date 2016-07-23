@@ -20,11 +20,17 @@
 
 
 
+import {createHistory} from 'history';
 import React from 'react';
 import {render} from 'react-dom';
-import {Router, Route, browserHistory} from 'react-router';
+import {Router, Route, useRouterHistory} from 'react-router';
 
 import Player from './Player.jsx';
+import Search from './Search.jsx';
+
+
+
+const browserHistory = useRouterHistory(createHistory)({basename: '/public'});
 
 
 
@@ -42,11 +48,17 @@ class App extends React.Component {
 }
 
 const Home = (props) => (
-    <Player
-        state='playing'
-        artistId={props.params.artistId}
-        songId={props.params.songId}
-    />
+    <div>
+        <Player
+            state='playing'
+            artistId={props.params.artistId}
+            songId={props.params.songId}
+        />
+        <Search
+            artistId={props.params.artistId}
+            songId={props.params.songId}
+        />
+    </div>
 );
 
 const About = () => <Player state='background' />;

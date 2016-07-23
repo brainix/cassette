@@ -51,6 +51,20 @@ body {
     color: white;
     font: 24px 'Lato', sans-serif;
     text-transform: lowercase;
+
+    a {
+        color: white;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    em {
+        font-style: normal;
+        font-weight: 700;
+    }
 }
 
 video {
@@ -69,5 +83,67 @@ video {
     &.playing {
         opacity: 0.8;
         cursor: pointer;
+    }
+}
+
+#search {
+    position: relative;
+    margin: 24px;
+    width: 20em;
+    font-weight: 300;
+
+    fieldset {
+        margin: 0;
+        border: 0;
+        padding: 0;
+
+        input {
+            -webkit-appearance: none !important;
+            border: 1px solid white;
+            border-radius: 2px;
+            padding: 4px 8px;
+            width: 6em;
+            line-height: 1.25;
+            background: transparent;
+            color: white;
+            font-weight: 700;
+            text-transform: lowercase;
+            transition: all 0.2s ease 0s;
+
+            &::-webkit-input-placeholder {
+                font-weight: 300;
+            }
+            &::-moz-placeholder {
+                font-weight: 300;
+            }
+            &:-moz-placeholder {
+                font-weight: 300;
+            }
+            &:-ms-input-placeholder {
+                font-weight: 300;
+            }
+
+            &:focus {
+                outline: 0;
+                width: 20em;
+            }
+        }
+    }
+
+    ol {
+        padding: 0;
+
+        li {
+            margin: 0.5em 0;
+            list-style-type: none;
+            line-height: 1.25;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            &:last-of-type {
+                margin: 0;
+            }
+        }
     }
 }

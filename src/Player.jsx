@@ -31,36 +31,30 @@ class Player extends React.Component {
     constructor(props) {
         super(props);
 
-        this.KATIE_NUM = 60;
         if (process.env.NODE_ENV == 'production') {
             this.API = 'https://api.spool.tv/v1';
         } else {
             this.API = 'http://localhost:5000/v1';
         }
-        [this.NEXT_KEYS, this.PREV_KEYS] = [[39], [37]];
+        this.NEXT_KEYS = [39];
+        this.PREV_KEYS = [37];
+        this.KATIE_NUM = 60;
 
         this.nextVideo = this.nextVideo.bind(this);
         this.prevVideo = this.prevVideo.bind(this);
-        this.state = {videos: [], index: null};
+        this.state = {index: null};
+        this.videos = [];
     }
 
     componentDidMount() {
-        if (this.props.artistId && this.props.songId) {
-            this.serverRequest = $.get(
-                this.API + `/artists/${this.props.artistId}/songs/${this.props.songId}`,
-                function(result) {
-                    this.setState({videos: [result.songs[0]]});
-                    this.fetchVideos(true);
-                }.bind(this)
-            );
-        } else {
-            this.fetchVideos(true);
-        }
+        this.initVideos();
         document.addEventListener('keyup', this.onKeyUp.bind(this));
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return nextState.index != this.state.index;
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.artistId != prevProps.artistId || this.props.songId != prevProps.songId) {
+            this.initVideos();
+        }
     }
 
     componentWillUnmount() {
@@ -75,28 +69,45 @@ class Player extends React.Component {
         }
     }
 
-    fetchVideos(init) {
+    initVideos() {
+        if (this.serverRequest) {
+            this.serverRequest.abort();
+        }
+        if (this.props.artistId && this.props.songId) {
+            this.serverRequest = $.get(
+                this.API + `/artists/${this.props.artistId}/songs/${this.props.songId}`,
+                function(result) {
+                    this.videos = [result.songs[0]];
+                    this.moreVideos(true);
+                }.bind(this)
+            );
+        } else {
+            this.moreVideos(true);
+        }
+    }
+
+    moreVideos(init) {
         if (this.serverRequest) {
             this.serverRequest.abort();
         }
         this.serverRequest = $.get(
             this.API + '/songs',
             function(result) {
-                this.setState({
-                    videos: this.state.videos.concat(result.songs),
-                    index: init ? 0 : this.state.index
-                });
+                this.videos = this.videos.concat(result.songs);
+                if (init) {
+                    this.setState({index: 0});
+                }
             }.bind(this)
         );
     }
 
     nextVideo() {
         if (this.state.index !== null) {
-            if (this.state.index < this.state.videos.length - 1) {
+            if (this.state.index < this.videos.length - 1) {
                 this.setState({index: this.state.index + 1});
             }
-            if (this.state.index >= this.state.videos.length - this.KATIE_NUM / 2) {
-                this.fetchVideos(false);
+            if (this.state.index >= this.videos.length - this.KATIE_NUM / 2) {
+                this.moreVideos(false);
             }
         }
     }
@@ -111,9 +122,9 @@ class Player extends React.Component {
 
     render() {
         var states, videos = [];
-        if (this.state.index === null || this.state.index > this.state.videos.length - 1) {
+        if (this.state.index === null || this.state.index > this.videos.length - 1) {
             states = [];
-        } else if (this.state.index == this.state.videos.length - 1 || this.props.state == 'background') {
+        } else if (this.state.index == this.videos.length - 1 || this.props.state == 'background') {
             states = [this.props.state];
         }
         else {
@@ -123,7 +134,7 @@ class Player extends React.Component {
             videos.push(
                 <Video
                     key={index}
-                    video={this.state.videos[this.state.index + index]}
+                    video={this.videos[this.state.index + index]}
                     state={states[index]}
                     nextVideo={this.nextVideo}
                 />
