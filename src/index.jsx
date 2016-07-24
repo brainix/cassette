@@ -49,11 +49,12 @@ function App() {
 
 function Chrome(props) {
     const linkTo = props.location.pathname == 'wtf' ? '/' : '/wtf';
+    const alt = props.location.pathname == 'wtf' ? 'Home' : 'WTF?';
     return (
         <div>
             {props.children}
             <Link id='logo' to={linkTo}>
-                <img src='/logo.png' />
+                <img src='/logo.png' alt={alt} title={alt} />
             </Link>
         </div>
     );
