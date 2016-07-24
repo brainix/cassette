@@ -192,8 +192,7 @@ class Video extends React.Component {
                 autoPlay={this.props.state == 'buffering' ? null : 'autoPlay'}
                 muted={this.props.state != 'playing'}
                 onClick={this.props.state == 'playing' ? this.props.nextVideo : null}
-            >
-            </video>
+            />
         );
     }
 }

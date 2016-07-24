@@ -106,8 +106,7 @@ function Results(props) {
                 <Link
                     to={linkTo}
                     dangerouslySetInnerHTML={{__html: html}}
-                >
-                </Link>
+                />
             </li>
         );
     }
