@@ -102,6 +102,9 @@ class Player extends React.Component {
     }
 
     nextVideo() {
+        if (this.props.reRender) {
+            this.props.reRender();
+        }
         if (this.state.index !== null) {
             if (this.state.index < this.videos.length - 1) {
                 this.setState({index: this.state.index + 1});
@@ -113,6 +116,9 @@ class Player extends React.Component {
     }
 
     prevVideo() {
+        if (this.props.reRender) {
+            this.props.reRender();
+        }
         if (this.state.index !== null) {
             if (this.state.index > 0) {
                 this.setState({index: this.state.index - 1});

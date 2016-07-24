@@ -58,16 +58,30 @@ const Chrome = (props) => (
     </div>
 );
 
-const Home = (props) => (
-    <div>
-        <Player
-            state='playing'
-            artistId={props.params.artistId}
-            songId={props.params.songId}
-        />
-        <Search query='' />
-    </div>
-);
+class Home extends React.Component {
+    constructor(props) {
+        super(props);
+        this.reRender = this.reRender.bind(this);
+    }
+
+    reRender() {
+        this.setState({key: Math.random()});
+    }
+
+    render() {
+        return (
+            <div>
+                <Player
+                    state='playing'
+                    artistId={this.props.params.artistId}
+                    songId={this.props.params.songId}
+                    reRender={this.reRender}
+                />
+                <Search />
+            </div>
+        );
+    }
+}
 
 class About extends React.Component {
     componentDidMount() {
