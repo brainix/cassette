@@ -54,11 +54,6 @@ body {
 
     a {
         color: white;
-        text-decoration: none;
-
-        &:hover {
-            text-decoration: underline;
-        }
     }
 
     em {
@@ -144,6 +139,25 @@ video {
             &:last-of-type {
                 margin: 0;
             }
+
+            a {
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
         }
+    }
+}
+
+#logo {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    margin: 24px;
+
+    img {
+        height: 64px;
     }
 }

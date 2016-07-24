@@ -23,14 +23,14 @@
 import {createHistory} from 'history';
 import React from 'react';
 import {render} from 'react-dom';
-import {Router, Route, useRouterHistory} from 'react-router';
+import {Router, Route, IndexRoute, Link, useRouterHistory} from 'react-router';
 
 import Player from './Player.jsx';
 import Search from './Search.jsx';
 
 
 
-const browserHistory = useRouterHistory(createHistory)({basename: '/public'});
+const browserHistory = useRouterHistory(createHistory)({basename: '/'});
 
 
 
@@ -38,14 +38,25 @@ class App extends React.Component {
     render() {
         return (
             <Router history={browserHistory}>
-                <Route path='/' component={Home} />
-                <Route path='/:artistId/:songId' component={Home} />
-                <Route path='/wtf' component={About} />
-                <Route path='*' component={NotFound} />
+                <Route path='/' component={Chrome}>
+                    <IndexRoute component={Home} />
+                    <Route path='/:artistId/:songId' component={Home} />
+                    <Route path='/wtf' component={About} />
+                    <Route path='*' component={NotFound} />
+                </Route>
             </Router>
         );
     }
 }
+
+const Chrome = (props) => (
+    <div>
+        {props.children}
+        <Link id='logo' to={props.location.pathname == 'wtf' ? '/' : '/wtf'}>
+            <img src='/logo.png' />
+        </Link>
+    </div>
+);
 
 const Home = (props) => (
     <div>
