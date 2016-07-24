@@ -95,25 +95,23 @@ class Search extends React.Component {
 
 
 
-class Results extends React.Component {
-    render() {
-        var items = [];
-        for (var index = 0; index < this.props.results.length; index++) {
-            const result = this.props.results[index];
-            const linkTo = `/${result.artist_id}/${result.song_id}`;
-            const html = `${result.artist} &mdash; ${result.song}`;
-            items.push(
-                <li key={index}>
-                    <Link
-                        to={linkTo}
-                        dangerouslySetInnerHTML={{__html: html}}
-                    >
-                    </Link>
-                </li>
-            );
-        }
-        return <ol>{items}</ol>;
+function Results(props) {
+    var items = [];
+    for (var index = 0; index < props.results.length; index++) {
+        const result = props.results[index];
+        const linkTo = `/${result.artist_id}/${result.song_id}`;
+        const html = `${result.artist} &mdash; ${result.song}`;
+        items.push(
+            <li key={index}>
+                <Link
+                    to={linkTo}
+                    dangerouslySetInnerHTML={{__html: html}}
+                >
+                </Link>
+            </li>
+        );
     }
+    return <ol>{items}</ol>;
 }
 
 

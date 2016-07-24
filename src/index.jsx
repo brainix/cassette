@@ -34,29 +34,30 @@ const browserHistory = useRouterHistory(createHistory)({basename: '/'});
 
 
 
-class App extends React.Component {
-    render() {
-        return (
-            <Router history={browserHistory}>
-                <Route path='/' component={Chrome}>
-                    <IndexRoute component={Home} />
-                    <Route path='/:artistId/:songId' component={Home} />
-                    <Route path='/wtf' component={About} />
-                    <Route path='*' component={NotFound} />
-                </Route>
-            </Router>
-        );
-    }
+function App() {
+    return (
+        <Router history={browserHistory}>
+            <Route path='/' component={Chrome}>
+                <IndexRoute component={Home} />
+                <Route path='/:artistId/:songId' component={Home} />
+                <Route path='/wtf' component={About} />
+                <Route path='*' component={NotFound} />
+            </Route>
+        </Router>
+    );
 }
 
-const Chrome = (props) => (
-    <div>
-        {props.children}
-        <Link id='logo' to={props.location.pathname == 'wtf' ? '/' : '/wtf'}>
-            <img src='/logo.png' />
-        </Link>
-    </div>
-);
+function Chrome(props) {
+    const linkTo = props.location.pathname == 'wtf' ? '/' : '/wtf';
+    return (
+        <div>
+            {props.children}
+            <Link id='logo' to={linkTo}>
+                <img src='/logo.png' />
+            </Link>
+        </div>
+    );
+}
 
 class Home extends React.Component {
     constructor(props) {
