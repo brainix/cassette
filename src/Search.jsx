@@ -38,6 +38,7 @@ class Search extends React.Component {
         }
 
         this.onChange = this.onChange.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
         this.clearInputAndResults = this.clearInputAndResults.bind(this);
         this.serverRequest = null;
         this.state = {results: []};
@@ -63,6 +64,10 @@ class Search extends React.Component {
         }
     }
 
+    onSubmit(eventObject) {
+        eventObject.preventDefault();
+    }
+
     clearInputAndResults() {
         document.getElementsByTagName('input')[0].value = '';
         this.setState({results: []});
@@ -71,7 +76,7 @@ class Search extends React.Component {
     render() {
         return (
             <div id='search'>
-                <form>
+                <form onSubmit={this.onSubmit}>
                     <fieldset>
                         <input
                             type='search'
@@ -83,10 +88,7 @@ class Search extends React.Component {
                         />
                     </fieldset>
                 </form>
-                <Results
-                    results={this.state.results}
-                    clearInputAndResults={this.clearInputAndResults}
-                />
+                <Results results={this.state.results} />
             </div>
         );
     }
@@ -99,14 +101,13 @@ class Results extends React.Component {
         var items = [];
         for (var index = 0; index < this.props.results.length; index++) {
             const result = this.props.results[index];
-            const to = `/${result.artist_id}/${result.song_id}`;
+            const linkTo = `/${result.artist_id}/${result.song_id}`;
             const html = `${result.artist} &mdash; ${result.song}`;
             items.push(
                 <li key={index}>
                     <Link
-                        to={to}
+                        to={linkTo}
                         dangerouslySetInnerHTML={{__html: html}}
-                        onClick={this.props.clearInputAndResults}
                     >
                     </Link>
                 </li>
