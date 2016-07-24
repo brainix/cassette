@@ -137,11 +137,14 @@ class Player extends React.Component {
             states = ['playing', 'buffering'];
         }
         for (var index = 0; index < states.length; index++) {
+            const video = this.videos[this.state.index + index];
+            const state = states[index];
+            const key = `/${video.artist_id}/${video.song_id}/${state}`
             videos.push(
                 <Video
-                    key={index}
-                    video={this.videos[this.state.index + index]}
-                    state={states[index]}
+                    key={key}
+                    video={video}
+                    state={state}
                     nextVideo={this.nextVideo}
                 />
             );

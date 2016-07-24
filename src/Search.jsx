@@ -102,7 +102,7 @@ function Results(props) {
         const linkTo = `/${result.artist_id}/${result.song_id}`;
         const html = `${result.artist} &mdash; ${result.song}`;
         items.push(
-            <li key={index}>
+            <li key={linkTo}>
                 <Link
                     to={linkTo}
                     dangerouslySetInnerHTML={{__html: html}}
