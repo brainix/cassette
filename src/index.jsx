@@ -65,10 +65,7 @@ const Home = (props) => (
             artistId={props.params.artistId}
             songId={props.params.songId}
         />
-        <Search
-            artistId={props.params.artistId}
-            songId={props.params.songId}
-        />
+        <Search query='' />
     </div>
 );
 

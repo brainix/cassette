@@ -39,9 +39,13 @@ class Search extends React.Component {
 
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
-        this.clearInputAndResults = this.clearInputAndResults.bind(this);
-        this.serverRequest = null;
         this.state = {results: []};
+        this.serverRequest = null;
+    }
+
+    componentWillReceiveProps() {
+        document.getElementsByTagName('input')[0].value = '';
+        this.setState({results: []});
     }
 
     componentWillUnmount() {
@@ -66,11 +70,6 @@ class Search extends React.Component {
 
     onSubmit(eventObject) {
         eventObject.preventDefault();
-    }
-
-    clearInputAndResults() {
-        document.getElementsByTagName('input')[0].value = '';
-        this.setState({results: []});
     }
 
     render() {
