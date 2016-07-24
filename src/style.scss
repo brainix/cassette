@@ -98,9 +98,9 @@ video {
             border-radius: 2px;
             padding: 4px 8px;
             width: 6em;
-            line-height: 1.25;
             background: transparent;
             color: white;
+            line-height: 1.25;
             font-weight: 700;
             text-transform: lowercase;
             transition: all 0.2s ease 0s;
@@ -131,10 +131,10 @@ video {
         li {
             margin: 0.5em 0;
             list-style-type: none;
-            line-height: 1.25;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.25;
 
             &:last-of-type {
                 margin: 0;
@@ -151,6 +151,40 @@ video {
     }
 }
 
+section {
+    position: relative;
+    margin: 24px;
+
+    h1, h2 {
+        margin: 0 0 48px;
+        width: 768px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 64px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    h2 {
+        margin-bottom: 24px;
+        font-size: 32px;
+        font-weight: 400;
+        text-transform: none;
+    }
+
+    p {
+        margin: 0 0 48px;
+        max-width: 640px;
+        line-height: 1.5;
+        text-transform: none;
+
+        &:last-of-type {
+            margin: 0;
+        }
+    }
+}
+
 #logo {
     position: fixed;
     right: 0;
@@ -158,6 +192,6 @@ video {
     margin: 24px;
 
     img {
-        height: 64px;
+        height: 80px;
     }
 }
