@@ -40,6 +40,7 @@ class Player extends React.Component {
         this.PREV_KEYS = [37];
         this.KATIE_NUM = 60;
 
+        this.onKeyUp = this.onKeyUp.bind(this);
         this.nextVideo = this.nextVideo.bind(this);
         this.prevVideo = this.prevVideo.bind(this);
         this.state = {index: null};
@@ -48,7 +49,7 @@ class Player extends React.Component {
 
     componentDidMount() {
         this.initVideos();
-        document.addEventListener('keyup', this.onKeyUp.bind(this));
+        document.addEventListener('keyup', this.onKeyUp);
     }
 
     componentDidUpdate(prevProps, prevState) {
