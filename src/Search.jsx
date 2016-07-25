@@ -31,23 +31,36 @@ class Search extends React.Component {
     constructor(props) {
         super(props);
         this.onSubmit = this.onSubmit.bind(this);
-        this.updateResults = this.updateResults.bind(this);
-        this.state = {results: []};
+        this.updateState = this.updateState.bind(this);
+        this.state = {
+            query: this.props.query || '',
+            results: this.props.results || []
+        };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            query: nextProps.query || '',
+            results: nextProps.results || []
+        });
     }
 
     onSubmit(eventObject) {
         eventObject.preventDefault();
     }
 
-    updateResults(results) {
-        this.setState({results: results});
+    updateState(query, results) {
+        this.setState({query: query || '', results: results || []});
     }
 
     render() {
         return (
             <form onSubmit={this.onSubmit}>
                 <fieldset>
-                    <Input updateResults={this.updateResults} />
+                    <Input
+                        query={this.state.query}
+                        updateState={this.updateState}
+                    />
                 </fieldset>
                 <Results results={this.state.results} />
             </form>
@@ -78,19 +91,20 @@ class Input extends React.Component {
     }
 
     onChange(eventObject) {
-        if (eventObject.target.value) {
+        var query = eventObject.target.value;
+        if (query) {
             if (this.serverRequest) {
                 this.serverRequest.abort();
             }
             this.serverRequest = $.get(
                 this.API + '/songs/search',
-                {q: eventObject.target.value},
+                {q: query},
                 function(result) {
-                    this.props.updateResults(result.songs);
+                    this.props.updateState(query, result.songs);
                 }.bind(this)
             );
         } else {
-            this.props.updateResults([]);
+            this.props.updateState(query, []);
         }
     }
 
@@ -102,6 +116,7 @@ class Input extends React.Component {
                 maxLength='20'
                 autoComplete='off'
                 spellCheck='false'
+                value={this.props.query}
                 onChange={this.onChange}
             />
         );

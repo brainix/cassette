@@ -106,7 +106,7 @@ class Player extends React.Component {
         if (this.props.reRender) {
             this.props.reRender();
         }
-        if (this.state.index !== null) {
+        if (document.activeElement === document.getElementsByTagName('body')[0] && this.state.index !== null) {
             if (this.state.index < this.videos.length - 1) {
                 this.setState({index: this.state.index + 1});
             }
@@ -120,7 +120,7 @@ class Player extends React.Component {
         if (this.props.reRender) {
             this.props.reRender();
         }
-        if (this.state.index !== null) {
+        if (document.activeElement === document.getElementsByTagName('body')[0] && this.state.index !== null) {
             if (this.state.index > 0) {
                 this.setState({index: this.state.index - 1});
             }
@@ -192,7 +192,7 @@ class Video extends React.Component {
                 loop
                 autoPlay={this.props.state == 'buffering' ? null : 'autoPlay'}
                 muted={this.props.state != 'playing'}
-                onClick={this.props.state == 'playing' ? this.props.nextVideo : null}
+                onMouseDown={this.props.state == 'playing' ? this.props.nextVideo : null}
             />
         );
     }
