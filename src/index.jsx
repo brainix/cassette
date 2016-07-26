@@ -132,7 +132,14 @@ class NotFound extends React.Component {
     }
 
     render() {
-        return <Player state='background' />;
+        return (
+            <div>
+                <Player state='background' />
+                <section>
+                    <h1>Not Found</h1>
+                </section>
+            </div>
+        );
     }
 }
 
