@@ -31,7 +31,8 @@ class Search extends React.Component {
     constructor(props) {
         super(props);
         this.onSubmit = this.onSubmit.bind(this);
-        this.updateState = this.updateState.bind(this);
+        this.updateQuery = this.updateQuery.bind(this);
+        this.updateResults = this.updateResults.bind(this);
         this.state = {
             query: this.props.query || '',
             results: this.props.results || []
@@ -49,8 +50,12 @@ class Search extends React.Component {
         eventObject.preventDefault();
     }
 
-    updateState(query, results) {
-        this.setState({query: query || '', results: results || []});
+    updateQuery(query) {
+        this.setState({query: query || ''});
+    }
+
+    updateResults(results) {
+        this.setState({results: results || []});
     }
 
     render() {
@@ -59,7 +64,8 @@ class Search extends React.Component {
                 <fieldset>
                     <Input
                         query={this.state.query}
-                        updateState={this.updateState}
+                        updateQuery={this.updateQuery}
+                        updateResults={this.updateResults}
                     />
                 </fieldset>
                 <Results results={this.state.results} />
@@ -92,6 +98,7 @@ class Input extends React.Component {
 
     onChange(eventObject) {
         var query = eventObject.target.value;
+        this.props.updateQuery(query);
         if (query) {
             if (this.serverRequest) {
                 this.serverRequest.abort();
@@ -100,11 +107,11 @@ class Input extends React.Component {
                 this.API + '/songs/search',
                 {q: query},
                 function(result) {
-                    this.props.updateState(query, result.songs);
+                    this.props.updateResults(result.songs);
                 }.bind(this)
             );
         } else {
-            this.props.updateState(query, []);
+            this.props.updateResults([]);
         }
     }
 

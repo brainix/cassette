@@ -63,11 +63,15 @@ function Chrome(props) {
 class Home extends React.Component {
     constructor(props) {
         super(props);
-        this.reRender = this.reRender.bind(this);
+        this.resetSearch = this.resetSearch.bind(this);
+        this.state = {
+            query: this.props.query || '',
+            results: this.props.results || []
+        };
     }
 
-    reRender() {
-        this.setState({key: Math.random()});
+    resetSearch() {
+        this.setState({query: '', results: []});
     }
 
     render() {
@@ -77,9 +81,9 @@ class Home extends React.Component {
                     state='playing'
                     artistId={this.props.params.artistId}
                     songId={this.props.params.songId}
-                    reRender={this.reRender}
+                    resetSearch={this.resetSearch}
                 />
-                <Search />
+                <Search query={this.state.query} results={this.state.results} />
             </div>
         );
     }
@@ -109,7 +113,7 @@ class About extends React.Component {
                     <p>
                         I want to build something frivolous, but in a
                         particular way.  Inexplicable like <small>MTV</small>,
-                        Twitter, Snapchat, or Yo.
+                        Twitter, or Snapchat.
                     </p>
 
                     <h2>How can I contact you?</h2>

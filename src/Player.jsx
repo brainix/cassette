@@ -103,8 +103,8 @@ class Player extends React.Component {
     }
 
     nextVideo() {
-        if (this.props.reRender) {
-            this.props.reRender();
+        if (this.props.resetSearch) {
+            this.props.resetSearch();
         }
         if (document.activeElement === document.getElementsByTagName('body')[0] && this.state.index !== null) {
             if (this.state.index < this.videos.length - 1) {
@@ -117,8 +117,8 @@ class Player extends React.Component {
     }
 
     prevVideo() {
-        if (this.props.reRender) {
-            this.props.reRender();
+        if (this.props.resetSearch) {
+            this.props.resetSearch();
         }
         if (document.activeElement === document.getElementsByTagName('body')[0] && this.state.index !== null) {
             if (this.state.index > 0) {
