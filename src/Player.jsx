@@ -31,16 +31,53 @@ class Player extends React.Component {
     constructor(props) {
         super(props);
 
+        this.NEXT_KEYS = [39];
+        this.PREV_KEYS = [37];
+
+        this.onKeyUp = this.onKeyUp.bind(this);
+        this.onVisibilityChange = this.onVisibilityChange.bind(this);
+    }
+
+    componentDidMount() {
+        document.addEventListener('keyup', this.onKeyUp);
+        document.addEventListener('visibilitychange', this.onVisibilityChange);
+    }
+
+    onKeyUp(e) {
+        if (this.refs.buffer && document.activeElement === document.getElementsByTagName('body')[0]) {
+            if (this.NEXT_KEYS.indexOf(e.which) != -1) {
+                this.refs.buffer.nextVideo();
+            } else if (this.PREV_KEYS.indexOf(e.which) != -1) {
+                this.refs.buffer.prevVideo();
+            }
+        }
+    }
+
+    onVisibilityChange() {
+        const video = document.getElementsByTagName('video')[0];
+        if (video) {
+            video[document.hidden ? 'pause' : 'play']();
+        }
+    }
+
+    render() {
+        return <Buffer {...this.props} ref='buffer' />;
+    }
+}
+
+
+
+class Buffer extends React.Component {
+    constructor(props) {
+        super(props);
+
         if (process.env.NODE_ENV == 'production') {
             this.API = 'https://api.spool.tv/v1';
         } else {
             this.API = 'http://localhost:5000/v1';
         }
-        this.NEXT_KEYS = [39];
-        this.PREV_KEYS = [37];
         this.KATIE_NUM = 60;
 
-        this.onKeyUp = this.onKeyUp.bind(this);
         this.nextVideo = this.nextVideo.bind(this);
         this.prevVideo = this.prevVideo.bind(this);
         this.state = {index: null};
@@ -49,7 +86,6 @@ class Player extends React.Component {
 
     componentDidMount() {
         this.initVideos();
-        document.addEventListener('keyup', this.onKeyUp);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -60,14 +96,6 @@ class Player extends React.Component {
 
     componentWillUnmount() {
         this.serverRequest.abort();
-    }
-
-    onKeyUp(e) {
-        if (this.NEXT_KEYS.indexOf(e.which) != -1) {
-            this.nextVideo();
-        } else if (this.PREV_KEYS.indexOf(e.which) != -1) {
-            this.prevVideo();
-        }
     }
 
     initVideos() {
@@ -103,10 +131,7 @@ class Player extends React.Component {
     }
 
     nextVideo() {
-        if (this.props.resetSearch) {
-            this.props.resetSearch();
-        }
-        if (document.activeElement === document.getElementsByTagName('body')[0] && this.state.index !== null) {
+        if (this.state.index !== null) {
             if (this.state.index < this.videos.length - 1) {
                 this.setState({index: this.state.index + 1});
             }
@@ -117,13 +142,8 @@ class Player extends React.Component {
     }
 
     prevVideo() {
-        if (this.props.resetSearch) {
-            this.props.resetSearch();
-        }
-        if (document.activeElement === document.getElementsByTagName('body')[0] && this.state.index !== null) {
-            if (this.state.index > 0) {
-                this.setState({index: this.state.index - 1});
-            }
+        if (this.state.index !== null && this.state.index > 0) {
+            this.setState({index: this.state.index - 1});
         }
     }
 
@@ -147,6 +167,7 @@ class Player extends React.Component {
                     video={video}
                     state={state}
                     nextVideo={this.nextVideo}
+                    resetSearch={this.props.resetSearch}
                 />
             );
         }
@@ -159,21 +180,25 @@ class Player extends React.Component {
 class Video extends React.Component {
     constructor(props) {
         super(props);
-        this.onVisibilityChange = this.onVisibilityChange.bind(this);
+        this.onMouseDown = this.onMouseDown.bind(this);
     }
 
     componentDidMount() {
         this.updateUrlAndTitle();
-        document.addEventListener('visibilitychange', this.onVisibilityChange);
     }
 
     componentDidUpdate() {
         this.updateUrlAndTitle();
     }
 
-    onVisibilityChange() {
-        var video = document.getElementsByTagName('video')[0];
-        video[document.hidden ? 'pause' : 'play']();
+    onMouseDown() {
+        if (this.props.state == 'playing') {
+            if (document.activeElement === document.getElementsByTagName('body')[0]) {
+                this.props.nextVideo();
+            } else {
+                this.props.resetSearch();
+            }
+        }
     }
 
     updateUrlAndTitle() {
@@ -190,9 +215,9 @@ class Video extends React.Component {
                 src={this.props.video.mp4_url}
                 preload='auto'
                 loop
-                autoPlay={this.props.state == 'buffering' ? null : 'autoPlay'}
+                autoPlay={this.props.state == 'buffering' ? null : 'autoplay'}
                 muted={this.props.state != 'playing'}
-                onMouseDown={this.props.state == 'playing' ? this.props.nextVideo : null}
+                onMouseDown={this.onMouseDown}
             />
         );
     }
