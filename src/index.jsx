@@ -23,7 +23,11 @@
 import {createHistory} from 'history';
 import React from 'react';
 import {render} from 'react-dom';
-import {Router, Route, IndexRoute, Link, useRouterHistory} from 'react-router';
+import IndexRoute from 'react-router/lib/IndexRoute';
+import Link from 'react-router/lib/Link';
+import Route from 'react-router/lib/Route';
+import Router from 'react-router/lib/Router';
+import useRouterHistory from 'react-router/lib/useRouterHistory';
 
 import Player from './Player.jsx';
 import Search from './Search.jsx';

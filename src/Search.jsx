@@ -23,7 +23,7 @@
 import $ from 'jquery';
 import React from 'react';
 import {render} from 'react-dom';
-import {Link} from 'react-router';
+import Link from 'react-router/lib/Link';
 
 
 
