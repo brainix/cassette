@@ -109,7 +109,9 @@ class Input extends React.Component {
                 function(result) {
                     this.props.updateResults(result.songs);
                 }.bind(this)
-            );
+            ).fail(function() {
+                this.props.updateResults([]);
+            }.bind(this));
         } else {
             this.props.updateResults([]);
         }
