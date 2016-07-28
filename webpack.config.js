@@ -46,15 +46,12 @@ module.exports = {
                         'NODE_ENV': JSON.stringify('production')
                     }
                 }),
-                new webpack.optimize.DedupePlugin(),
                 new webpack.optimize.UglifyJsPlugin({
-                    minimize: true,
                     compress: {warnings: false}
                 })
             );
         } else {
             plugins.push(
-                new webpack.optimize.OccurenceOrderPlugin(),
                 new webpack.HotModuleReplacementPlugin(),
                 new webpack.NoErrorsPlugin()
             );
