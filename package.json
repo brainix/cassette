@@ -38,6 +38,6 @@
   },
   "devDependencies": {
     "webpack-dev-middleware": "^1.6.1",
-    "webpack-hot-middleware": "^2.12.1"
+    "webpack-hot-middleware": "^2.12.2"
   }
 }
