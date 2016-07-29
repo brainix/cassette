@@ -136,8 +136,7 @@ class Input extends React.Component {
 
 function Results(props) {
     var items = [];
-    for (var index = 0; index < props.results.length; index++) {
-        const result = props.results[index];
+    for (var result of props.results) {
         const key = `/${result.artist_id}/${result.song_id}`;
         const item = <Result key={key} result={result} />;
         items.push(item);
