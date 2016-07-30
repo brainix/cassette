@@ -27,7 +27,7 @@ import Link from 'react-router/lib/Link';
 
 
 
-class Search extends React.Component {
+class Search extends React.PureComponent {
     constructor(props) {
         super(props);
         this.onSubmit = this.onSubmit.bind(this);
@@ -76,7 +76,7 @@ class Search extends React.Component {
 
 
 
-class Input extends React.Component {
+class Input extends React.PureComponent {
     constructor(props) {
         super(props);
 
