@@ -26,6 +26,9 @@ const webpack = require('webpack');
 
 const SRC_DIR = path.resolve(__dirname, 'src');
 const BUILD_DIR = path.resolve(__dirname, 'public');
+const NODE_ENV = JSON.stringify(process.env.NODE_ENV || 'development');
+
+
 
 module.exports = {
     entry: [
@@ -38,14 +41,12 @@ module.exports = {
         publicPath: '/'
     },
     plugins: (function() {
-        var plugins = [new ExtractTextPlugin('style.css', {allChunks: true})];
+        var plugins = [
+            new webpack.DefinePlugin({'process.env.NODE_ENV': NODE_ENV}),
+            new ExtractTextPlugin('style.css', {allChunks: true})
+        ];
         if (process.env.NODE_ENV == 'production') {
             plugins.push(
-                new webpack.DefinePlugin({
-                    'process.env': {
-                        'NODE_ENV': JSON.stringify('production')
-                    }
-                }),
                 new webpack.optimize.UglifyJsPlugin({
                     compress: {warnings: false}
                 })
