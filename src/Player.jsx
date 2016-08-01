@@ -30,10 +30,8 @@ import browserHistory from 'react-router/lib/browserHistory';
 class Player extends React.Component {
     constructor(props) {
         super(props);
-
         this.NEXT_KEYS = [39];
         this.PREV_KEYS = [37];
-
         this.onKeyUp = this.onKeyUp.bind(this);
         this.onVisibilityChange = this.onVisibilityChange.bind(this);
     }
@@ -43,11 +41,11 @@ class Player extends React.Component {
         document.addEventListener('visibilitychange', this.onVisibilityChange);
     }
 
-    onKeyUp(e) {
+    onKeyUp(eventObject) {
         if (this.refs.buffer && document.activeElement === document.getElementsByTagName('body')[0]) {
-            if (this.NEXT_KEYS.indexOf(e.which) != -1) {
+            if (this.NEXT_KEYS.indexOf(eventObject.which) != -1) {
                 this.refs.buffer.nextVideo();
-            } else if (this.PREV_KEYS.indexOf(e.which) != -1) {
+            } else if (this.PREV_KEYS.indexOf(eventObject.which) != -1) {
                 this.refs.buffer.prevVideo();
             }
         }
@@ -70,14 +68,12 @@ class Player extends React.Component {
 class Buffer extends React.Component {
     constructor(props) {
         super(props);
-
         if (process.env.NODE_ENV == 'production') {
             this.API = 'https://api.spool.tv/v1';
         } else {
             this.API = 'http://localhost:5000/v1';
         }
         this.KATIE_NUM = 60;
-
         this.nextVideo = this.nextVideo.bind(this);
         this.prevVideo = this.prevVideo.bind(this);
         this.state = {index: null};
