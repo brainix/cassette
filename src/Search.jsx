@@ -24,6 +24,7 @@ import $ from 'jquery';
 import React from 'react';
 import {render} from 'react-dom';
 import Link from 'react-router/lib/Link';
+import withRouter from 'react-router/lib/withRouter';
 
 
 
@@ -31,8 +32,7 @@ class Search extends React.PureComponent {
     constructor(props) {
         super(props);
         this.onSubmit = this.onSubmit.bind(this);
-        this.updateQuery = this.updateQuery.bind(this);
-        this.updateResults = this.updateResults.bind(this);
+        this.updateState = this.updateState.bind(this);
         this.state = {
             query: this.props.query || '',
             results: this.props.results || []
@@ -48,14 +48,11 @@ class Search extends React.PureComponent {
 
     onSubmit(eventObject) {
         eventObject.preventDefault();
+        this.refs.results.redirect();
     }
 
-    updateQuery(query) {
-        this.setState({query: query || ''});
-    }
-
-    updateResults(results) {
-        this.setState({results: results || []});
+    updateState(nextState) {
+        this.setState(nextState);
     }
 
     render() {
@@ -64,11 +61,14 @@ class Search extends React.PureComponent {
                 <fieldset>
                     <Input
                         query={this.state.query}
-                        updateQuery={this.updateQuery}
-                        updateResults={this.updateResults}
+                        updateState={this.updateState}
                     />
                 </fieldset>
-                <Results results={this.state.results} />
+                <Results
+                    results={this.state.results}
+                    router={this.props.router}
+                    ref='results'
+                />
             </form>
         );
     }
@@ -79,15 +79,20 @@ class Search extends React.PureComponent {
 class Input extends React.PureComponent {
     constructor(props) {
         super(props);
-
         if (process.env.NODE_ENV == 'production') {
             this.API = 'https://api.spool.tv/v1';
         } else {
             this.API = 'http://localhost:5000/v1';
         }
-
         this.onChange = this.onChange.bind(this);
         this.serverRequest = null;
+    }
+
+    componentDidUpdate() {
+        if (this.props.query === '') {
+            var input = document.querySelectorAll('input[type=search]')[0];
+            input.blur();
+        }
     }
 
     componentWillUnmount() {
@@ -98,7 +103,7 @@ class Input extends React.PureComponent {
 
     onChange(eventObject) {
         var query = eventObject.target.value;
-        this.props.updateQuery(query);
+        this.props.updateState({query: query});
         if (query) {
             if (this.serverRequest) {
                 this.serverRequest.abort();
@@ -107,13 +112,13 @@ class Input extends React.PureComponent {
                 this.API + '/songs/search',
                 {q: query},
                 function(result) {
-                    this.props.updateResults(result.songs);
+                    this.props.updateState({results: result.songs});
                 }.bind(this)
             ).fail(function() {
-                this.props.updateResults([]);
+                this.props.updateState({results: []});
             }.bind(this));
         } else {
-            this.props.updateResults([]);
+            this.props.updateState({results: []});
         }
     }
 
@@ -134,31 +139,117 @@ class Input extends React.PureComponent {
 
 
 
-function Results(props) {
-    var items = [];
-    for (var result of props.results) {
-        const key = `/${result.artist_id}/${result.song_id}`;
-        const item = <Result key={key} result={result} />;
-        items.push(item);
+class Results extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.UP_KEYS = [38];
+        this.DOWN_KEYS = [40];
+        this.onKeyDown = this.onKeyDown.bind(this);
+        this.onKeyUp = this.onKeyUp.bind(this);
+        this.updateSelected = this.updateSelected.bind(this);
+        this.state = {selected: null};
     }
-    return <ol>{items}</ol>;
+
+    componentDidMount() {
+        document.addEventListener('keydown', this.onKeyDown);
+        document.addEventListener('keyup', this.onKeyUp);
+    }
+
+    componentWillReceiveProps() {
+        this.setState({selected: null});
+    }
+
+    onKeyDown(eventObject) {
+        if (this.props.results.length &&
+            this.UP_KEYS.indexOf(eventObject.which) != -1 ||
+            this.DOWN_KEYS.indexOf(eventObject.which) != -1) {
+            eventObject.preventDefault();
+        }
+    }
+
+    onKeyUp(eventObject) {
+        if (this.props.results.length) {
+            if (this.UP_KEYS.indexOf(eventObject.which) != -1) {
+                this.updateSelected(-1);
+            } else if (this.DOWN_KEYS.indexOf(eventObject.which) != -1) {
+                this.updateSelected(1);
+            }
+        }
+    }
+
+    updateSelected(direction) {
+        var selected = this.state.selected;
+        if (selected === null) {
+            selected = -0.5 * direction - 0.5;
+        }
+        selected += direction;
+        selected += this.props.results.length;
+        selected %= this.props.results.length;
+        this.setState({selected: selected});
+    }
+
+    redirect() {
+        if (this.refs.result) {
+            this.props.router.push(this.refs.result.target);
+        }
+    }
+
+    render() {
+        var items = [];
+        for (var index = 0; index < this.props.results.length; index++) {
+            const result = this.props.results[index];
+            const key = `/${result.artist_id}/${result.song_id}`;
+            const selected = index == this.state.selected;
+            const ref = index == this.state.selected ? 'result' : null;
+            const item = (
+                <Result
+                    key={key}
+                    result={result}
+                    selected={selected}
+                    ref={ref}
+                />
+            );
+            items.push(item);
+        }
+        return <ol>{items}</ol>;
+    }
 }
 
 
 
-function Result(props) {
-    const linkTo = `/${props.result.artist_id}/${props.result.song_id}`;
-    const html = `${props.result.artist} &mdash; ${props.result.song}`;
-    return (
-        <li>
-            <Link
-                to={linkTo}
-                dangerouslySetInnerHTML={{__html: html}}
-            />
-        </li>
-    );
+class Result extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.target = `/${this.props.result.artist_id}`;
+        this.target += `/${this.props.result.song_id}`;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.target = `/${this.props.result.artist_id}`;
+        this.target += `/${this.props.result.song_id}`;
+    }
+
+    render() {
+        if (this.props.selected) {
+            var style = {textDecoration: 'underline'};
+        } else {
+            var style = null;
+        }
+        var html = this.props.result.artist;
+        html += ' &mdash; ';
+        html += this.props.result.song;
+        return (
+            <li>
+                <Link
+                    to={this.target}
+                    style={style}
+                    dangerouslySetInnerHTML={{__html: html}}
+                />
+            </li>
+        );
+    }
 }
 
 
 
-export default Search;
+export default withRouter(Search);
