@@ -90,7 +90,7 @@ class Input extends React.PureComponent {
 
     componentDidUpdate() {
         if (this.props.query === '') {
-            var input = document.querySelectorAll('input[type=search]')[0];
+            let input = document.querySelectorAll('input[type=search]')[0];
             input.blur();
         }
     }
@@ -102,7 +102,7 @@ class Input extends React.PureComponent {
     }
 
     onChange(eventObject) {
-        var query = eventObject.target.value;
+        let query = eventObject.target.value;
         this.props.updateState({query: query});
         if (query) {
             if (this.serverRequest) {
@@ -111,12 +111,8 @@ class Input extends React.PureComponent {
             this.serverRequest = $.get(
                 this.API + '/songs/search',
                 {q: query},
-                function(result) {
-                    this.props.updateState({results: result.songs});
-                }.bind(this)
-            ).fail(function() {
-                this.props.updateState({results: []});
-            }.bind(this));
+                (result) => this.props.updateState({results: result.songs})
+            ).fail(() => this.props.updateState({results: []}));
         } else {
             this.props.updateState({results: []});
         }
@@ -178,7 +174,7 @@ class Results extends React.PureComponent {
     }
 
     updateSelected(direction) {
-        var selected = this.state.selected;
+        let selected = this.state.selected;
         if (selected === null) {
             selected = -0.5 * direction - 0.5;
         }
@@ -195,8 +191,8 @@ class Results extends React.PureComponent {
     }
 
     render() {
-        var items = [];
-        for (var index = 0; index < this.props.results.length; index++) {
+        let items = [];
+        for (let index = 0; index < this.props.results.length; index++) {
             const result = this.props.results[index];
             const key = `/${result.artist_id}/${result.song_id}`;
             const selected = index == this.state.selected;
@@ -230,12 +226,8 @@ class Result extends React.PureComponent {
     }
 
     render() {
-        if (this.props.selected) {
-            var style = {textDecoration: 'underline'};
-        } else {
-            var style = null;
-        }
-        var html = this.props.result.artist;
+        var style = {textDecoration: this.props.selected ? 'underline' : null}
+        let html = this.props.result.artist;
         html += ' &mdash; ';
         html += this.props.result.song;
         return (

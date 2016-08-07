@@ -41,7 +41,7 @@ module.exports = {
         publicPath: '/'
     },
     plugins: (function() {
-        var plugins = [
+        const plugins = [
             new webpack.DefinePlugin({'process.env.NODE_ENV': NODE_ENV}),
             new ExtractTextPlugin('style.css', {allChunks: true})
         ];

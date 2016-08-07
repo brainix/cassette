@@ -101,10 +101,10 @@ class Buffer extends React.Component {
         if (this.props.artistId && this.props.songId) {
             this.serverRequest = $.get(
                 this.API + `/artists/${this.props.artistId}/songs/${this.props.songId}`,
-                function(result) {
+                (result) => {
                     this.videos = [result.songs[0]];
                     this.moreVideos(true);
-                }.bind(this)
+                }
             );
         } else {
             this.moreVideos(true);
@@ -117,12 +117,12 @@ class Buffer extends React.Component {
         }
         this.serverRequest = $.get(
             this.API + '/songs',
-            function(result) {
+            (result) => {
                 this.videos = this.videos.concat(result.songs);
                 if (init) {
                     this.setState({index: 0});
                 }
-            }.bind(this)
+            }
         );
     }
 
@@ -144,7 +144,7 @@ class Buffer extends React.Component {
     }
 
     render() {
-        var states, videos = [];
+        let states, videos = [];
         if (this.state.index === null || this.state.index > this.videos.length - 1) {
             states = [];
         } else if (this.state.index == this.videos.length - 1 || this.props.state == 'background') {
@@ -153,7 +153,7 @@ class Buffer extends React.Component {
         else {
             states = ['playing', 'buffering'];
         }
-        for (var index = 0; index < states.length; index++) {
+        for (let index = 0; index < states.length; index++) {
             const video = this.videos[this.state.index + index];
             const state = states[index];
             const key = `/${video.artist_id}/${video.song_id}/${state}`
