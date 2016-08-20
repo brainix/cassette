@@ -228,7 +228,7 @@ class Result extends React.PureComponent {
     }
 
     render() {
-        var style = {textDecoration: this.props.selected ? 'underline' : null}
+        const style = {textDecoration: this.props.selected ? 'underline' : null};
         let html = this.props.result.artist;
         html += ' &mdash; ';
         html += this.props.result.song;
