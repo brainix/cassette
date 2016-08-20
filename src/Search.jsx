@@ -89,8 +89,8 @@ class Input extends React.PureComponent {
     }
 
     componentDidUpdate() {
-        if (this.props.query === '') {
-            let input = document.querySelectorAll('input[type=search]')[0];
+        if (!this.props.query) {
+            const input = document.querySelectorAll('input[type=search]')[0];
             input.blur();
         }
     }
@@ -102,7 +102,7 @@ class Input extends React.PureComponent {
     }
 
     onChange(eventObject) {
-        let query = eventObject.target.value;
+        const query = eventObject.target.value;
         this.props.updateState({query: query});
         if (query) {
             if (this.serverRequest) {
@@ -112,9 +112,9 @@ class Input extends React.PureComponent {
                 this.API + '/songs/search',
                 {q: query},
                 (result) => this.props.updateState({results: result.songs})
-            ).fail(() => this.props.updateState({results: []})).always(() => {
-                $.post(this.API + '/queries', {q: query});
-            });
+            )
+                .fail(() => this.props.updateState({results: []}))
+                .always(() => $.post(this.API + '/queries', {q: query}));
         } else {
             this.props.updateState({results: []});
         }
@@ -159,17 +159,17 @@ class Results extends React.PureComponent {
 
     onKeyDown(eventObject) {
         if (this.props.results.length &&
-            this.UP_KEYS.indexOf(eventObject.which) != -1 ||
-            this.DOWN_KEYS.indexOf(eventObject.which) != -1) {
+            this.UP_KEYS.indexOf(eventObject.which) !== -1 ||
+            this.DOWN_KEYS.indexOf(eventObject.which) !== -1) {
             eventObject.preventDefault();
         }
     }
 
     onKeyUp(eventObject) {
         if (this.props.results.length) {
-            if (this.UP_KEYS.indexOf(eventObject.which) != -1) {
+            if (this.UP_KEYS.indexOf(eventObject.which) !== -1) {
                 this.updateSelected(-1);
-            } else if (this.DOWN_KEYS.indexOf(eventObject.which) != -1) {
+            } else if (this.DOWN_KEYS.indexOf(eventObject.which) !== -1) {
                 this.updateSelected(1);
             }
         }
@@ -193,7 +193,7 @@ class Results extends React.PureComponent {
     }
 
     render() {
-        let items = [];
+        const items = [];
         for (let index = 0; index < this.props.results.length; index++) {
             const result = this.props.results[index];
             const key = `/${result.artist_id}/${result.song_id}`;
@@ -218,20 +218,19 @@ class Results extends React.PureComponent {
 class Result extends React.PureComponent {
     constructor(props) {
         super(props);
-        this.target = `/${this.props.result.artist_id}`;
-        this.target += `/${this.props.result.song_id}`;
+        const {artist_id, song_id} = this.props.result;
+        this.target = `/${artist_id}/${song_id}`;
     }
 
     componentWillReceiveProps(nextProps) {
-        this.target = `/${this.props.result.artist_id}`;
-        this.target += `/${this.props.result.song_id}`;
+        const {artist_id, song_id} = this.props.result;
+        this.target = `/${artist_id}/${song_id}`;
     }
 
     render() {
-        var style = {textDecoration: this.props.selected ? 'underline' : null}
-        let html = this.props.result.artist;
-        html += ' &mdash; ';
-        html += this.props.result.song;
+        const style = {textDecoration: this.props.selected ? 'underline' : null};
+        const {artist, song} = this.props.result;
+        const html = `${artist} &mdash; ${song}`;
         return (
             <li>
                 <Link
