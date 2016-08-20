@@ -112,9 +112,9 @@ class Input extends React.PureComponent {
                 this.API + '/songs/search',
                 {q: query},
                 (result) => this.props.updateState({results: result.songs})
-            ).fail(() => this.props.updateState({results: []})).always(() => {
-                $.post(this.API + '/queries', {q: query});
-            });
+            )
+                .fail(() => this.props.updateState({results: []}))
+                .always(() => $.post(this.API + '/queries', {q: query}));
         } else {
             this.props.updateState({results: []});
         }
