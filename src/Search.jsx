@@ -90,7 +90,7 @@ class Input extends React.PureComponent {
 
     componentDidUpdate() {
         if (this.props.query === '') {
-            let input = document.querySelectorAll('input[type=search]')[0];
+            const input = document.querySelectorAll('input[type=search]')[0];
             input.blur();
         }
     }
@@ -102,7 +102,7 @@ class Input extends React.PureComponent {
     }
 
     onChange(eventObject) {
-        let query = eventObject.target.value;
+        const query = eventObject.target.value;
         this.props.updateState({query: query});
         if (query) {
             if (this.serverRequest) {
