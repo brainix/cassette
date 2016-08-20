@@ -42,7 +42,7 @@ class Player extends React.Component {
     }
 
     onKeyUp(eventObject) {
-        if (this.refs.buffer && document.activeElement === document.getElementsByTagName('body')[0]) {
+        if (this.refs.buffer && document.activeElement === document.body) {
             if (this.NEXT_KEYS.indexOf(eventObject.which) != -1) {
                 this.refs.buffer.nextVideo();
             } else if (this.PREV_KEYS.indexOf(eventObject.which) != -1) {
@@ -191,7 +191,7 @@ class Video extends React.Component {
 
     onMouseDown() {
         if (this.props.state == 'playing') {
-            if (document.activeElement === document.getElementsByTagName('body')[0]) {
+            if (document.activeElement === document.body) {
                 this.props.nextVideo();
             } else {
                 this.props.resetSearch();
