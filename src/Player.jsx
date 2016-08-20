@@ -84,8 +84,9 @@ class Buffer extends React.Component {
         this.initVideos();
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.artistId !== prevProps.artistId || this.props.songId !== prevProps.songId) {
+    componentDidUpdate(prevProps) {
+        if (this.props.artistId !== prevProps.artistId ||
+            this.props.songId !== prevProps.songId) {
             this.initVideos();
         }
     }
@@ -147,9 +148,11 @@ class Buffer extends React.Component {
     render() {
         const videos = [];
         let states;
-        if (this.state.index === null || this.state.index > this.videos.length - 1) {
+        if (this.state.index === null ||
+            this.state.index > this.videos.length - 1) {
             states = [];
-        } else if (this.state.index === this.videos.length - 1 || this.props.state === 'background') {
+        } else if (this.state.index === this.videos.length - 1 ||
+                   this.props.state === 'background') {
             states = [this.props.state];
         }
         else {
@@ -214,8 +217,8 @@ class Video extends React.Component {
                 src={this.props.video.mp4_url}
                 preload='auto'
                 loop
-                autoPlay={this.props.state == 'buffering' ? null : 'autoplay'}
-                muted={this.props.state != 'playing'}
+                autoPlay={this.props.state === 'buffering' ? null : 'autoplay'}
+                muted={this.props.state !== 'playing'}
                 onMouseDown={this.onMouseDown}
             />
         );
