@@ -89,7 +89,7 @@ class Input extends React.PureComponent {
     }
 
     componentDidUpdate() {
-        if (this.props.query === '') {
+        if (!this.props.query) {
             const input = document.querySelectorAll('input[type=search]')[0];
             input.blur();
         }
@@ -159,17 +159,17 @@ class Results extends React.PureComponent {
 
     onKeyDown(eventObject) {
         if (this.props.results.length &&
-            this.UP_KEYS.indexOf(eventObject.which) != -1 ||
-            this.DOWN_KEYS.indexOf(eventObject.which) != -1) {
+            this.UP_KEYS.indexOf(eventObject.which) !== -1 ||
+            this.DOWN_KEYS.indexOf(eventObject.which) !== -1) {
             eventObject.preventDefault();
         }
     }
 
     onKeyUp(eventObject) {
         if (this.props.results.length) {
-            if (this.UP_KEYS.indexOf(eventObject.which) != -1) {
+            if (this.UP_KEYS.indexOf(eventObject.which) !== -1) {
                 this.updateSelected(-1);
-            } else if (this.DOWN_KEYS.indexOf(eventObject.which) != -1) {
+            } else if (this.DOWN_KEYS.indexOf(eventObject.which) !== -1) {
                 this.updateSelected(1);
             }
         }

@@ -43,9 +43,9 @@ class Player extends React.Component {
 
     onKeyUp(eventObject) {
         if (this.refs.buffer && document.activeElement === document.body) {
-            if (this.NEXT_KEYS.indexOf(eventObject.which) != -1) {
+            if (this.NEXT_KEYS.indexOf(eventObject.which) !== -1) {
                 this.refs.buffer.nextVideo();
-            } else if (this.PREV_KEYS.indexOf(eventObject.which) != -1) {
+            } else if (this.PREV_KEYS.indexOf(eventObject.which) !== -1) {
                 this.refs.buffer.prevVideo();
             }
         }
@@ -68,7 +68,7 @@ class Player extends React.Component {
 class Buffer extends React.Component {
     constructor(props) {
         super(props);
-        if (process.env.NODE_ENV == 'production') {
+        if (process.env.NODE_ENV === 'production') {
             this.API = 'https://api.spool.tv/v1';
         } else {
             this.API = 'http://localhost:5000/v1';
@@ -85,7 +85,7 @@ class Buffer extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.artistId != prevProps.artistId || this.props.songId != prevProps.songId) {
+        if (this.props.artistId !== prevProps.artistId || this.props.songId !== prevProps.songId) {
             this.initVideos();
         }
     }
@@ -149,7 +149,7 @@ class Buffer extends React.Component {
         let states;
         if (this.state.index === null || this.state.index > this.videos.length - 1) {
             states = [];
-        } else if (this.state.index == this.videos.length - 1 || this.props.state == 'background') {
+        } else if (this.state.index === this.videos.length - 1 || this.props.state === 'background') {
             states = [this.props.state];
         }
         else {
@@ -190,7 +190,7 @@ class Video extends React.Component {
     }
 
     onMouseDown() {
-        if (this.props.state == 'playing') {
+        if (this.props.state === 'playing') {
             if (document.activeElement === document.body) {
                 this.props.nextVideo();
             } else {
@@ -200,7 +200,7 @@ class Video extends React.Component {
     }
 
     updateUrlAndTitle() {
-        if (this.props.state == 'playing') {
+        if (this.props.state === 'playing') {
             const {artist_id, song_id, artist, song} = this.props.video;
             browserHistory.replace(`/${artist_id}/${song_id}`);
             document.title = `Spool - ${artist} - ${song}`;
