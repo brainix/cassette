@@ -99,8 +99,9 @@ class Buffer extends React.Component {
             this.serverRequest.abort();
         }
         if (this.props.artistId && this.props.songId) {
+            const {artistId, songId} = this.props;
             this.serverRequest = $.get(
-                this.API + `/artists/${this.props.artistId}/songs/${this.props.songId}`,
+                this.API + `/artists/${artistId}/songs/${songId}`,
                 (result) => {
                     this.videos = [result.songs[0]];
                     this.moreVideos(true);
@@ -144,7 +145,8 @@ class Buffer extends React.Component {
     }
 
     render() {
-        let states, videos = [];
+        const videos = [];
+        let states;
         if (this.state.index === null || this.state.index > this.videos.length - 1) {
             states = [];
         } else if (this.state.index == this.videos.length - 1 || this.props.state == 'background') {
@@ -199,8 +201,9 @@ class Video extends React.Component {
 
     updateUrlAndTitle() {
         if (this.props.state == 'playing') {
-            browserHistory.replace(`/${this.props.video.artist_id}/${this.props.video.song_id}`);
-            document.title = `Spool - ${this.props.video.artist} - ${this.props.video.song}`;
+            const {artist_id, song_id, artist, song} = this.props.video;
+            browserHistory.replace(`/${artist_id}/${song_id}`);
+            document.title = `Spool - ${artist} - ${song}`;
         }
     }
 

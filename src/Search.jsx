@@ -193,7 +193,7 @@ class Results extends React.PureComponent {
     }
 
     render() {
-        let items = [];
+        const items = [];
         for (let index = 0; index < this.props.results.length; index++) {
             const result = this.props.results[index];
             const key = `/${result.artist_id}/${result.song_id}`;
@@ -218,20 +218,19 @@ class Results extends React.PureComponent {
 class Result extends React.PureComponent {
     constructor(props) {
         super(props);
-        this.target = `/${this.props.result.artist_id}`;
-        this.target += `/${this.props.result.song_id}`;
+        const {artist_id, song_id} = this.props.result;
+        this.target = `/${artist_id}/${song_id}`;
     }
 
     componentWillReceiveProps(nextProps) {
-        this.target = `/${this.props.result.artist_id}`;
-        this.target += `/${this.props.result.song_id}`;
+        const {artist_id, song_id} = this.props.result;
+        this.target = `/${artist_id}/${song_id}`;
     }
 
     render() {
         const style = {textDecoration: this.props.selected ? 'underline' : null};
-        let html = this.props.result.artist;
-        html += ' &mdash; ';
-        html += this.props.result.song;
+        const {artist, song} = this.props.result;
+        const html = `${artist} &mdash; ${song}`;
         return (
             <li>
                 <Link
