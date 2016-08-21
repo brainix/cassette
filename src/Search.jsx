@@ -58,6 +58,7 @@ class Search extends React.PureComponent {
     render() {
         return (
             <form onSubmit={this.onSubmit}>
+                <Precache />
                 <fieldset>
                     <Input
                         query={this.state.query}
@@ -71,6 +72,54 @@ class Search extends React.PureComponent {
                 />
             </form>
         );
+    }
+}
+
+
+
+class Precache extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        if (process.env.NODE_ENV == 'production') {
+            this.API = 'https://api.spool.tv/v1';
+        } else {
+            this.API = 'http://localhost:5000/v1';
+        }
+        this.serverRequest = null;
+    }
+
+    componentDidMount() {
+        this.getQueries();
+    }
+
+    shouldComponentUpdate() {
+        return false;
+    }
+
+    componentWillUnmount() {
+        if (this.serverRequest) {
+            this.serverRequest.abort();
+        }
+    }
+
+    getQueries() {
+        this.serverRequest = $.get(
+            this.API + '/queries',
+            (result) => this.cacheQueries(result.queries)
+        );
+    }
+
+    cacheQueries(queries) {
+        const query = queries.shift();
+        this.serverRequest = $.get(
+            this.API + '/songs/search',
+            {q: query},
+            () => this.cacheQueries(queries)
+        )
+    }
+
+    render() {
+        return null;
     }
 }
 
