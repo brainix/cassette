@@ -110,12 +110,14 @@ class Precache extends React.PureComponent {
     }
 
     cacheQueries(queries) {
-        const query = queries.shift();
-        this.serverRequest = $.get(
-            this.API + '/songs/search',
-            {q: query},
-            () => this.cacheQueries(queries)
-        )
+        if (queries.length) {
+            const query = queries.shift();
+            this.serverRequest = $.get(
+                this.API + '/songs/search',
+                {q: query}
+            )
+                .always(() => this.cacheQueries(queries));
+        }
     }
 
     render() {
