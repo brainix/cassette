@@ -70,6 +70,7 @@ video {
     height: 100%;
     object-fit: cover;
     opacity: 0.4;
+    transition: all 0.2s ease 0s;
 
     &:not(:first-of-type) {
         display: none;
