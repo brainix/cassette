@@ -132,8 +132,11 @@ class Input extends React.PureComponent {
         } else {
             this.API = 'http://localhost:5000/v1';
         }
+        this.onFocus = this.onFocus.bind(this);
+        this.onBlur = this.onBlur.bind(this);
         this.onChange = this.onChange.bind(this);
         this.serverRequest = null;
+        this.$video = null;
     }
 
     componentDidUpdate() {
@@ -146,6 +149,17 @@ class Input extends React.PureComponent {
     componentWillUnmount() {
         if (this.serverRequest) {
             this.serverRequest.abort();
+        }
+    }
+
+    onFocus() {
+        this.$video = $('.playing');
+        this.$video.removeClass('playing');
+    }
+
+    onBlur() {
+        if (this.$video !== null) {
+            this.$video.addClass('playing');
         }
     }
 
@@ -177,6 +191,8 @@ class Input extends React.PureComponent {
                 autoComplete='off'
                 spellCheck='false'
                 value={this.props.query}
+                onFocus={this.onFocus}
+                onBlur={this.onBlur}
                 onChange={this.onChange}
             />
         );
