@@ -117,7 +117,7 @@ class About extends React.Component {
                     <p>
                         I want to build something frivolous, but in a
                         particular way.  Inexplicable like <small>MTV</small>,
-                        Twitter, or Snapchat.
+                        Twitter, Snapchat, or Yo.
                     </p>
 
                     <h2>How can I contact you?</h2>
