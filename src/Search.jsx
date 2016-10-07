@@ -132,23 +132,36 @@ class Input extends React.PureComponent {
         } else {
             this.API = 'http://localhost:5000/v1';
         }
+        this.onKeyPress = this.onKeyPress.bind(this);
         this.onFocus = this.onFocus.bind(this);
         this.onBlur = this.onBlur.bind(this);
         this.onChange = this.onChange.bind(this);
         this.serverRequest = null;
+        this.$input = null;
         this.$video = null;
+    }
+
+    componentDidMount() {
+        document.addEventListener('keypress', this.onKeyPress);
+        this.$input = $('input[type=search]');
     }
 
     componentDidUpdate() {
         if (!this.props.query) {
-            const input = document.querySelectorAll('input[type=search]')[0];
-            input.blur();
+            this.$input.blur();
         }
     }
 
     componentWillUnmount() {
         if (this.serverRequest) {
             this.serverRequest.abort();
+        }
+    }
+
+    onKeyPress(eventObject) {
+        const c = String.fromCharCode(eventObject.which);
+        if (c && !this.$input.is('focus')) {
+            this.$input.focus();
         }
     }
 
@@ -175,7 +188,6 @@ class Input extends React.PureComponent {
                 {q: query},
                 (result) => this.props.updateState({results: result.songs})
             )
-                .fail(() => this.props.updateState({results: []}))
                 .always(() => $.post(this.API + '/queries', {q: query}));
         } else {
             this.props.updateState({results: []});
