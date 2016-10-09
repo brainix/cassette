@@ -34,6 +34,18 @@ import Search from './Search.jsx';
 
 
 
+String.prototype.trimAll = function () {
+    const s = this.trim();
+    s.replace(/\s+/g, ' ');
+    return s;
+};
+
+Array.prototype.choice = function () {
+    return this[Math.floor(Math.random() * this.length)];
+};
+
+
+
 const browserHistory = useRouterHistory(createHistory)({basename: '/'});
 
 
