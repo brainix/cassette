@@ -40,7 +40,7 @@ String.prototype.trimAll = function () {
     return s;
 };
 
-String.prototype.htmlToText = function() {
+String.prototype.htmlToText = function () {
     const s = this.replace(/<[a-z]*>/ig, '')    // HTML open tags
         .replace(/<\/[a-z]*>/ig, '')            // HTML close tags
         .replace(/\&mdash;/ig, '-');
