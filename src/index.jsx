@@ -40,6 +40,10 @@ String.prototype.trimAll = function () {
     return s;
 };
 
+Array.prototype.choice = function () {
+    return this[Math.floor(Math.random() * this.length)];
+};
+
 
 
 const browserHistory = useRouterHistory(createHistory)({basename: '/'});
