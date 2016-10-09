@@ -307,12 +307,14 @@ class Result extends React.PureComponent {
         const style = {textDecoration: this.props.selected ? 'underline' : null};
         const {artist, song} = this.props.result;
         const html = `${artist} &mdash; ${song}`;
+        const title = html.htmlToText();
         return (
             <li>
                 <Link
                     to={this.target}
                     style={style}
                     dangerouslySetInnerHTML={{__html: html}}
+                    title={title}
                 />
             </li>
         );
