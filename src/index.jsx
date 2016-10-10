@@ -41,7 +41,7 @@ String.prototype.trimAll = function () {
 };
 
 String.prototype.htmlToText = function () {
-    const s = this.replace(/<[a-z]*>/ig, '')    // HTML open tags
+    const s = this.replace(/<[^>]*\/?>/g, '')   // HTML open and self-closing tags
         .replace(/<\/[a-z]*>/ig, '')            // HTML close tags
         .replace(/\&mdash;/ig, '-');
     return s;
