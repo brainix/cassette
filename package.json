@@ -39,6 +39,7 @@
     "webpack-hot-middleware": "^2.13.0"
   },
   "devDependencies": {
+    "babel-core": "^6.17.0",
     "webpack-dev-middleware": "^1.6.1",
     "webpack-hot-middleware": "^2.12.2"
   }
