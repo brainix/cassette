@@ -37,8 +37,8 @@ module.exports = {
     ],
     output: {
         path: BUILD_DIR,
-        filename: 'bundle.js',
-        publicPath: '/'
+        publicPath: '/',
+        filename: 'bundle.js'
     },
     plugins: (function() {
         const plugins = [
