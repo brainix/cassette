@@ -160,7 +160,7 @@ class Input extends React.PureComponent {
 
     onKeyPress(eventObject) {
         const c = String.fromCharCode(eventObject.which);
-        if (c && !this.$input.is('focus')) {
+        if (c && /^[0-9a-z]+$/i.test(c) && !this.$input.is('focus')) {
             this.$input.focus();
         }
     }
