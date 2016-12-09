@@ -71,8 +71,8 @@ function App() {
 }
 
 function Chrome(props) {
-    const linkTo = props.location.pathname == 'wtf' ? '/' : '/wtf';
-    const alt = props.location.pathname == 'wtf' ? 'Home' : 'WTF?';
+    const linkTo = props.location.pathname === 'wtf' ? '/' : '/wtf';
+    const alt = props.location.pathname === 'wtf' ? 'Home' : 'WTF?';
     return (
         <div>
             {props.children}

@@ -80,7 +80,7 @@ class Search extends React.PureComponent {
 class Precache extends React.PureComponent {
     constructor(props) {
         super(props);
-        if (process.env.NODE_ENV == 'production') {
+        if (process.env.NODE_ENV === 'production') {
             this.API = 'https://api.spool.tv/v1';
         } else {
             this.API = 'http://localhost:5000/v1';
@@ -127,7 +127,7 @@ class Precache extends React.PureComponent {
 class Input extends React.PureComponent {
     constructor(props) {
         super(props);
-        if (process.env.NODE_ENV == 'production') {
+        if (process.env.NODE_ENV === 'production') {
             this.API = 'https://api.spool.tv/v1';
         } else {
             this.API = 'http://localhost:5000/v1';
@@ -419,8 +419,8 @@ class Results extends React.PureComponent {
         for (let index = 0; index < this.props.results.length; index++) {
             const result = this.props.results[index];
             const key = `/${result.artist_id}/${result.song_id}`;
-            const selected = index == this.state.selected;
-            const ref = index == this.state.selected ? 'result' : null;
+            const selected = index === this.state.selected;
+            const ref = index === this.state.selected ? 'result' : null;
             const item = (
                 <Result
                     key={key}

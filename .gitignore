@@ -35,3 +35,9 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+
+
+# Raj's additions
+public/bundle.js
+public/style.css
