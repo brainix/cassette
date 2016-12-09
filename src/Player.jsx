@@ -161,7 +161,7 @@ class Buffer extends React.Component {
         for (let index = 0; index < states.length; index++) {
             const video = this.videos[this.state.index + index];
             const state = states[index];
-            const key = `/${video.artist_id}/${video.song_id}/${state}`
+            const key = `/${video.artist_id}/${video.song_id}/${state}`;
             videos.push(
                 <Video
                     key={key}
