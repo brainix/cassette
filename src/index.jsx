@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*\
  |  index.jsx                                                                |
  |                                                                           |
- |  Copyright © 2016, Rajiv Bakulesh Shah, original author.                  |
+ |  Copyright © 2016-2017, Rajiv Bakulesh Shah, original author.             |
  |                                                                           |
  |      This program is free software: you can redistribute it and/or modify |
  |      it under the terms of the GNU General Public License as published by |
