@@ -19,9 +19,9 @@ upgrade:
 	brew update
 	brew upgrade
 	brew cleanup
-	npm outdated
+	-npm outdated
 	npm update --save
 	npm update --save-dev
-	npm outdated
+	-npm outdated
 	git status
 	git diff
