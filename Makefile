@@ -26,3 +26,6 @@ upgrade:
 	-npm outdated
 	git status
 	git diff
+
+run:
+	npm run start
