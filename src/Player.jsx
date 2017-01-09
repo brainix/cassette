@@ -73,7 +73,7 @@ class Buffer extends React.Component {
         } else {
             this.API = 'http://localhost:5000/v1';
         }
-        this.KATIE_NUM = 60;
+        this.BATCH_SIZE = 60;
         this.nextVideo = this.nextVideo.bind(this);
         this.prevVideo = this.prevVideo.bind(this);
         this.state = {index: null};
@@ -133,7 +133,7 @@ class Buffer extends React.Component {
             if (this.state.index < this.videos.length - 1) {
                 this.setState({index: this.state.index + 1});
             }
-            if (this.state.index >= this.videos.length - this.KATIE_NUM / 2) {
+            if (this.state.index >= this.videos.length - this.BATCH_SIZE / 2) {
                 this.moreVideos(false);
             }
         }
