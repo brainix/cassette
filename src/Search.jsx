@@ -204,6 +204,21 @@ class Input extends React.PureComponent {
             case 'raj':
                 return [
                     {
+                        "_id": 1554,
+                        "album_id": null,
+                        "artist": "Weezer",
+                        "artist_id": "weezer",
+                        "artwork_url": "http://is5.mzstatic.com/image/thumb/Video/d7/7f/67/mzi.bfhabttq.jpg/133x100bb-85.jpg",
+                        "genre": "Rock",
+                        "genre_id": "rock",
+                        "itunes_artist_url": "https://itunes.apple.com/us/artist/weezer/id115234?uo=2",
+                        "itunes_genre_url": "https://itunes.apple.com/us/genre/music-videos-rock/id1621?uo=2",
+                        "itunes_song_url": "https://itunes.apple.com/us/music-video/buddy-holly/id272450585?uo=2",
+                        "mp4_url": "http://a477.phobos.apple.com/us/r1000/044/Video/f6/f9/64/mzm.njrbodrr..640x464.h264lc.u.p.m4v",
+                        "song": "Buddy Holly",
+                        "song_id": "buddy-holly"
+                    },
+                    {
                         "_id": 1685,
                         "album": "The Videos",
                         "album_id": "the-videos",
@@ -219,21 +234,6 @@ class Input extends React.PureComponent {
                         "mp4_url": "http://a969.phobos.apple.com/us/r1000/003/Video/fb/83/98/mzm.gnztiswm..640x400.h264lc.u.p.m4v",
                         "song": "Scar Tissue",
                         "song_id": "scar-tissue"
-                    },
-                    {
-                        "_id": 1554,
-                        "album_id": null,
-                        "artist": "Weezer",
-                        "artist_id": "weezer",
-                        "artwork_url": "http://is5.mzstatic.com/image/thumb/Video/d7/7f/67/mzi.bfhabttq.jpg/133x100bb-85.jpg",
-                        "genre": "Rock",
-                        "genre_id": "rock",
-                        "itunes_artist_url": "https://itunes.apple.com/us/artist/weezer/id115234?uo=2",
-                        "itunes_genre_url": "https://itunes.apple.com/us/genre/music-videos-rock/id1621?uo=2",
-                        "itunes_song_url": "https://itunes.apple.com/us/music-video/buddy-holly/id272450585?uo=2",
-                        "mp4_url": "http://a477.phobos.apple.com/us/r1000/044/Video/f6/f9/64/mzm.njrbodrr..640x464.h264lc.u.p.m4v",
-                        "song": "Buddy Holly",
-                        "song_id": "buddy-holly"
                     },
                     {
                         "_id": 840,
