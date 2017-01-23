@@ -53,11 +53,8 @@ Array.prototype.choice = function () {
 
 
 
-const browserHistory = useRouterHistory(createHistory)({basename: '/'});
-
-
-
 function App() {
+    const browserHistory = useRouterHistory(createHistory)({basename: '/'});
     return (
         <Router history={browserHistory}>
             <Route path='/' component={Chrome}>
@@ -89,7 +86,7 @@ class Home extends React.Component {
         this.resetSearch = this.resetSearch.bind(this);
         this.state = {
             query: this.props.query || '',
-            results: this.props.results || []
+            results: this.props.results || [],
         };
     }
 

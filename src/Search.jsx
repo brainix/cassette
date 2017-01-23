@@ -35,14 +35,14 @@ class Search extends React.PureComponent {
         this.updateState = this.updateState.bind(this);
         this.state = {
             query: this.props.query || '',
-            results: this.props.results || []
+            results: this.props.results || [],
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
             query: nextProps.query || '',
-            results: nextProps.results || []
+            results: nextProps.results || [],
         });
     }
 
@@ -105,7 +105,7 @@ class Precache extends React.PureComponent {
     getQueries() {
         this.serverRequest = $.get(
             this.API + '/queries',
-            (result) => this.cacheQueries(result.queries)
+            (result) => this.cacheQueries(result.queries),
         );
     }
 
@@ -188,7 +188,7 @@ class Input extends React.PureComponent {
                 this.serverRequest = $.get(
                     this.API + '/songs/search',
                     {q: query},
-                    (result) => this.props.updateState({results: result.songs})
+                    (result) => this.props.updateState({results: result.songs}),
                 )
                     .always(() => $.post(this.API + '/queries', {q: query}));
             } else {
@@ -216,7 +216,7 @@ class Input extends React.PureComponent {
                         "itunes_song_url": "https://itunes.apple.com/us/music-video/buddy-holly/id272450585?uo=2",
                         "mp4_url": "http://a477.phobos.apple.com/us/r1000/044/Video/f6/f9/64/mzm.njrbodrr..640x464.h264lc.u.p.m4v",
                         "song": "Buddy Holly",
-                        "song_id": "buddy-holly"
+                        "song_id": "buddy-holly",
                     },
                     {
                         "_id": 1685,
@@ -233,7 +233,7 @@ class Input extends React.PureComponent {
                         "itunes_song_url": "https://itunes.apple.com/us/music-video/scar-tissue/id142229976?uo=2",
                         "mp4_url": "http://a969.phobos.apple.com/us/r1000/003/Video/fb/83/98/mzm.gnztiswm..640x400.h264lc.u.p.m4v",
                         "song": "Scar Tissue",
-                        "song_id": "scar-tissue"
+                        "song_id": "scar-tissue",
                     },
                     {
                         "_id": 840,
@@ -248,8 +248,8 @@ class Input extends React.PureComponent {
                         "itunes_song_url": "https://itunes.apple.com/us/music-video/stacys-mom/id720080360?uo=2",
                         "mp4_url": "http://a1589.phobos.apple.com/us/r30/Video7/v4/3b/78/40/3b784070-23e5-335c-a535-85adf912b3b4/mzvf_4653304549299309499.640x480.h264lc.U.p.m4v",
                         "song": "Stacy's Mom",
-                        "song_id": "stacys-mom"
-                    }
+                        "song_id": "stacys-mom",
+                    },
                 ];
             default:
                 return null;

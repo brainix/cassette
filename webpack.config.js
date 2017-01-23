@@ -20,9 +20,9 @@
 
 
 
-const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const webpack = require('webpack');
+import path from 'path';
+import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import webpack from 'webpack';
 
 const SRC_DIR = path.resolve(__dirname, 'src');
 const BUILD_DIR = path.resolve(__dirname, 'public');
@@ -33,32 +33,32 @@ const NODE_ENV = JSON.stringify(process.env.NODE_ENV || 'development');
 module.exports = {
     entry: [
         SRC_DIR + '/style.scss',
-        SRC_DIR + '/index.jsx'
+        SRC_DIR + '/index.jsx',
     ],
     output: {
         path: BUILD_DIR,
         publicPath: '/',
-        filename: 'bundle.js'
+        filename: 'bundle.js',
     },
-    plugins: (function() {
+    plugins: ((() => {
         const plugins = [
             new webpack.DefinePlugin({'process.env.NODE_ENV': NODE_ENV}),
-            new ExtractTextPlugin('style.css', {allChunks: true})
+            new ExtractTextPlugin('style.css', {allChunks: true}),
         ];
         if (process.env.NODE_ENV == 'production') {
             plugins.push(
                 new webpack.optimize.UglifyJsPlugin({
-                    compress: {warnings: false}
-                })
+                    compress: {warnings: false},
+                }),
             );
         } else {
             plugins.push(
                 new webpack.HotModuleReplacementPlugin(),
-                new webpack.NoErrorsPlugin()
+                new webpack.NoErrorsPlugin(),
             );
         }
         return plugins;
-    }()),
+    })()),
     module: {
         loaders: [
             {
@@ -66,14 +66,14 @@ module.exports = {
                 include: SRC_DIR,
                 loader: ExtractTextPlugin.extract(
                     'style-loader',
-                    'css-loader!postcss-loader!sass-loader'
-                )
+                    'css-loader!postcss-loader!sass-loader',
+                ),
             },
             {
                 test: /\.jsx?$/,
                 include: SRC_DIR,
-                loader: 'babel'
-            }
-        ]
-    }
+                loader: 'babel',
+            },
+        ],
+    },
 };

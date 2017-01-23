@@ -20,13 +20,15 @@
 
 
 
-const express = require('express');
-const http = require('http');
-const https = require('https');
-const path = require('path');
+import express from 'express';
+import http from 'http';
+import https from 'https';
+import path from 'path';
 
 const app = express();
 const port = process.env.PORT || 8080;
+
+
 
 if (process.env.NODE_ENV !== 'production') {
     const webpackDevMiddleware = require('webpack-dev-middleware');
@@ -40,6 +42,8 @@ if (process.env.NODE_ENV !== 'production') {
     }));
     app.use(webpackHotMiddleware(compiler));
 }
+
+
 
 app.use(express.static(__dirname + '/public'));
 
@@ -87,6 +91,8 @@ app.get('/sitemap.xml', (request, response) => {
 app.get('*', (request, response) => {
     response.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 });
+
+
 
 app.listen(port);
 console.log(`Listening at: http://127.0.0.1:${port} (${process.pid})`);
