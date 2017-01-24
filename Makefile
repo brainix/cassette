@@ -15,6 +15,7 @@ install:
 	brew analytics regenerate-uuid
 	brew install node
 	npm install
+	ln -s webpack.config.babel.js webpack.config.js
 
 upgrade:
 	brew update

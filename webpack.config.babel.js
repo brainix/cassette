@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
- |  webpack.config.js                                                        |
+ |  webpack.config.babel.js                                                  |
  |                                                                           |
  |  Copyright © 2016-2017, Rajiv Bakulesh Shah, original author.             |
  |                                                                           |

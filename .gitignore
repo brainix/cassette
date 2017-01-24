@@ -41,3 +41,4 @@ jspm_packages
 # Raj's additions
 public/bundle.js
 public/style.css
+webpack.config.js
