@@ -20,7 +20,7 @@
 
 
 
-import {createHistory} from 'history';
+import {createHistory, createMemoryHistory} from 'history';
 import React from 'react';
 import {render} from 'react-dom';
 import IndexRoute from 'react-router/lib/IndexRoute';
@@ -54,7 +54,12 @@ Array.prototype.choice = function () {
 
 
 function App() {
-    const browserHistory = useRouterHistory(createHistory)({basename: '/'});
+    let browserHistory;
+    if (typeof window === 'undefined') {
+        browserHistory = useRouterHistory(createMemoryHistory)({basename: '/'});
+    } else {
+        browserHistory = useRouterHistory(createHistory)({basename: '/'});
+    }
     return (
         <Router history={browserHistory}>
             <Route path='/' component={Chrome}>
@@ -169,4 +174,10 @@ class NotFound extends React.Component {
 
 
 
-render(<App/>, document.getElementById('app'));
+if (typeof window !== 'undefined') {
+    render(<App/>, document.getElementById('app'));
+}
+
+
+
+export default App;

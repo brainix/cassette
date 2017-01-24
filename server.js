@@ -25,6 +25,10 @@ import http from 'http';
 import https from 'https';
 import path from 'path';
 
+import ReactDOMServer from 'react-dom/server';
+
+import App from './src/index.jsx';
+
 const app = express();
 const port = process.env.PORT || 8080;
 
@@ -86,6 +90,12 @@ app.get('/sitemap.xml', (request, response) => {
             response.send(body);
         });
     });
+});
+
+app.get('/', (request, response) => {
+    const component = App();
+    const markup = ReactDOMServer.renderToString(component);
+    response.send(markup);
 });
 
 app.get('*', (request, response) => {
