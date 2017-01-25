@@ -49,8 +49,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 
-app.use(express.static(__dirname + '/public'));
-
 app.get(['/robots.txt', '/humans.txt'], (request, response) => {
     const module = process.env.NODE_ENV == 'production' ? https : http;
     const scheme = process.env.NODE_ENV == 'production' ? 'https' : 'http';
@@ -101,6 +99,8 @@ app.get('/', (request, response) => {
 app.get('*', (request, response) => {
     response.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 });
+
+app.use(express.static(__dirname + '/public'));
 
 
 
