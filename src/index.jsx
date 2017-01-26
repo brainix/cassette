@@ -53,7 +53,7 @@ Array.prototype.choice = function () {
 
 
 
-function App() {
+function App(props) {
     let browserHistory;
     if (typeof window === 'undefined') {
         browserHistory = useRouterHistory(createMemoryHistory)({basename: '/'});
@@ -63,10 +63,10 @@ function App() {
     return (
         <Router history={browserHistory}>
             <Route path='/' component={Chrome}>
-                <IndexRoute component={Home} />
-                <Route path='/:artistId/:songId' component={Home} />
-                <Route path='/wtf' component={About} />
-                <Route path='*' component={NotFound} />
+                <IndexRoute component={Home} {...props} />
+                <Route path='/:artistId/:songId' component={Home} {...props} />
+                <Route path='/wtf' component={About} {...props} />
+                <Route path='*' component={NotFound} {...props} />
             </Route>
         </Router>
     );
@@ -107,6 +107,7 @@ class Home extends React.Component {
                     artistId={this.props.params.artistId}
                     songId={this.props.params.songId}
                     resetSearch={this.resetSearch}
+                    videos={this.props.videos || this.props.route.videos}
                 />
                 <Search query={this.state.query} results={this.state.results} />
             </div>
@@ -122,7 +123,10 @@ class About extends React.Component {
     render() {
         return (
             <div>
-                <Player state='background' />
+                <Player
+                    state='background'
+                    videos={this.props.videos || this.props.route.videos}
+                />
                 <section>
                     <h1>About Me</h1>
 
@@ -163,7 +167,10 @@ class NotFound extends React.Component {
     render() {
         return (
             <div>
-                <Player state='background' />
+                <Player
+                    state='background'
+                    videos={this.props.videos || this.props.route.videos}
+                />
                 <section>
                     <h1>Not Found</h1>
                 </section>
@@ -175,7 +182,8 @@ class NotFound extends React.Component {
 
 
 if (typeof window !== 'undefined') {
-    render(<App/>, document.getElementById('app'));
+    render(<App videos={window.videos} />, document.getElementById('app'));
+    window.videos = [];
 }
 
 

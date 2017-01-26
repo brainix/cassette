@@ -76,8 +76,8 @@ class Buffer extends React.Component {
         this.BATCH_SIZE = 60;
         this.nextVideo = this.nextVideo.bind(this);
         this.prevVideo = this.prevVideo.bind(this);
-        this.state = {index: null};
-        this.videos = [];
+        this.videos = this.props.videos || [];
+        this.state = {index: this.videos ? 0 : null};
     }
 
     componentDidMount() {
@@ -87,29 +87,34 @@ class Buffer extends React.Component {
     componentDidUpdate(prevProps) {
         if (this.props.artistId !== prevProps.artistId ||
             this.props.songId !== prevProps.songId) {
+            this.videos = [];
             this.initVideos();
         }
     }
 
     componentWillUnmount() {
-        this.serverRequest.abort();
+        if (this.serverRequest) {
+            this.serverRequest.abort();
+        }
     }
 
     initVideos() {
         if (this.serverRequest) {
             this.serverRequest.abort();
         }
-        if (this.props.artistId && this.props.songId) {
-            const {artistId, songId} = this.props;
-            this.serverRequest = $.get(
-                this.API + `/artists/${artistId}/songs/${songId}`,
-                (result) => {
-                    this.videos = [result.songs[0]];
-                    this.moreVideos(true);
-                }
-            );
-        } else {
-            this.moreVideos(true);
+        if (this.videos.length === 0) {
+            if (this.props.artistId && this.props.songId) {
+                const {artistId, songId} = this.props;
+                this.serverRequest = $.get(
+                    this.API + `/artists/${artistId}/songs/${songId}`,
+                    (result) => {
+                        this.videos = [result.songs[0]];
+                        this.moreVideos(true);
+                    }
+                );
+            } else {
+                this.moreVideos(true);
+            }
         }
     }
 
