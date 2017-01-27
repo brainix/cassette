@@ -30,7 +30,6 @@ import ReactDOMServer from 'react-dom/server';
 import App from './src/index.jsx';
 
 const app = express();
-const port = process.env.PORT || 8080;
 
 
 
@@ -47,17 +46,28 @@ if (process.env.NODE_ENV !== 'production') {
     app.use(webpackHotMiddleware(compiler));
 }
 
-
-
 app.set('view engine', 'pug');
 
-app.get(['/robots.txt', '/humans.txt'], (request, response) => {
-    const module = process.env.NODE_ENV == 'production' ? https : http;
+app.locals.port = process.env.PORT || 8080;
+if (process.env.NODE_ENV === 'production') {
+    app.locals.http = https;
     const scheme = process.env.NODE_ENV == 'production' ? 'https' : 'http';
     const hostname = process.env.NODE_ENV == 'production' ? 'api.spool.tv' : 'localhost';
     const port = process.env.NODE_ENV == 'production' ? 443 : 5000;
-    const url = `${scheme}://${hostname}:${port}${request.path}`;
-    module.get(url, (apiResponse) => {
+    app.locals.apiHost = `${scheme}://${hostname}:${port}`;
+} else {
+    app.locals.http = http;
+    const scheme = process.env.NODE_ENV == 'production' ? 'https' : 'http';
+    const hostname = process.env.NODE_ENV == 'production' ? 'api.spool.tv' : 'localhost';
+    const port = process.env.NODE_ENV == 'production' ? 443 : 5000;
+    app.locals.apiHost = `${scheme}://${hostname}:${port}`;
+}
+
+
+
+app.get(['/robots.txt', '/humans.txt'], (request, response) => {
+    const url = `${app.locals.apiHost}${request.path}`;
+    app.locals.http.get(url, (apiResponse) => {
         let body = '';
         apiResponse.on('data', (data) => {
             body += data;
@@ -70,12 +80,8 @@ app.get(['/robots.txt', '/humans.txt'], (request, response) => {
 });
 
 app.get('/sitemap.xml', (request, response) => {
-    const module = process.env.NODE_ENV == 'production' ? https : http;
-    const scheme = process.env.NODE_ENV == 'production' ? 'https' : 'http';
-    const hostname = process.env.NODE_ENV == 'production' ? 'api.spool.tv' : 'localhost';
-    const port = process.env.NODE_ENV == 'production' ? 443 : 5000;
-    const url = `${scheme}://${hostname}:${port}/sitemap.xml`;
-    module.get(url, (apiResponse) => {
+    const url = `${app.locals.apiHost}/sitemap.xml`;
+    app.locals.http.get(url, (apiResponse) => {
         let body = '';
         apiResponse.on('data', (data) => {
             body += data;
@@ -94,12 +100,8 @@ app.get('/sitemap.xml', (request, response) => {
 });
 
 app.get('/', (request, response) => {
-    const module = process.env.NODE_ENV == 'production' ? https : http;
-    const scheme = process.env.NODE_ENV == 'production' ? 'https' : 'http';
-    const hostname = process.env.NODE_ENV == 'production' ? 'api.spool.tv' : 'localhost';
-    const port = process.env.NODE_ENV == 'production' ? 443 : 5000;
-    const url = `${scheme}://${hostname}:${port}/v1/songs`;
-    module.get(url, (apiResponse) => {
+    const url = `${app.locals.apiHost}/v1/songs`;
+    app.locals.http.get(url, (apiResponse) => {
         let json = '';
         apiResponse.on('data', (data) => {
             json += data;
@@ -118,20 +120,16 @@ app.get('/', (request, response) => {
 });
 
 app.get('/:artistId/:songId', (request, response) => {
-    const module = process.env.NODE_ENV == 'production' ? https : http;
-    const scheme = process.env.NODE_ENV == 'production' ? 'https' : 'http';
-    const hostname = process.env.NODE_ENV == 'production' ? 'api.spool.tv' : 'localhost';
-    const port = process.env.NODE_ENV == 'production' ? 443 : 5000;
-    let url = `${scheme}://${hostname}:${port}/v1/artists/${request.params.artistId}/songs/${request.params.songId}`;
-    module.get(url, (apiResponse) => {
+    const url = `${app.locals.apiHost}/v1/artists/${request.params.artistId}/songs/${request.params.songId}`;
+    app.locals.http.get(url, (apiResponse) => {
         let json = '';
         apiResponse.on('data', (data) => {
             json += data;
         });
         apiResponse.on('end', () => {
             let videos = [JSON.parse(json).songs[0]];
-            const url = `${scheme}://${hostname}:${port}/v1/songs`;
-            module.get(url, (apiResponse) => {
+            const url = `${app.locals.apiHost}/v1/songs`;
+            app.locals.http.get(url, (apiResponse) => {
                 json = '';
                 apiResponse.on('data', (data) => {
                     json += data;
@@ -159,5 +157,5 @@ app.get('*', (request, response) => {
 
 
 
-app.listen(port);
-console.log(`Listening at: http://127.0.0.1:${port} (${process.pid})`);
+app.listen(app.locals.port);
+console.log(`Listening at: http://127.0.0.1:${app.locals.port} (${process.pid})`);
