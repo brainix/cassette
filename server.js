@@ -26,6 +26,7 @@ import https from 'https';
 import path from 'path';
 
 import ReactDOMServer from 'react-dom/server';
+import parallel from 'async/parallel';
 
 import App from './src/index.jsx';
 
@@ -120,31 +121,42 @@ app.get('/', (request, response) => {
 });
 
 app.get('/:artistId/:songId', (request, response) => {
-    const url = `${app.locals.apiHost}/v1/artists/${request.params.artistId}/songs/${request.params.songId}`;
-    app.locals.http.get(url, (apiResponse) => {
-        let json = '';
-        apiResponse.on('data', (data) => {
-            json += data;
-        });
-        apiResponse.on('end', () => {
-            let videos = [JSON.parse(json).songs[0]];
-            const url = `${app.locals.apiHost}/v1/songs`;
+    parallel([
+        (callback) => {
+            const url = `${app.locals.apiHost}/v1/artists/${request.params.artistId}/songs/${request.params.songId}`;
             app.locals.http.get(url, (apiResponse) => {
-                json = '';
+                let json = '';
                 apiResponse.on('data', (data) => {
                     json += data;
                 });
                 apiResponse.on('end', () => {
-                    videos = videos.concat(JSON.parse(json).songs);
-                    const component = App({videos: videos});
-                    const rendered = ReactDOMServer.renderToString(component);
-                    response.render('index', {
-                        title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
-                        app: rendered,
-                        videos: videos,
-                    });
+                    const videos = [JSON.parse(json).songs[0]];
+                    callback(null, videos);
                 });
             });
+        },
+        (callback) => {
+            const url = `${app.locals.apiHost}/v1/songs`;
+            app.locals.http.get(url, (apiResponse) => {
+                let json = '';
+                apiResponse.on('data', (data) => {
+                    json += data;
+                });
+                apiResponse.on('end', () => {
+                    const videos = JSON.parse(json).songs;
+                    callback(null, videos);
+                });
+            });
+        },
+    ],
+    (err, results) => {
+        const videos = [].concat.apply([], results);
+        const component = App({videos: videos});
+        const rendered = ReactDOMServer.renderToString(component);
+        response.render('index', {
+            title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
+            app: rendered,
+            videos: videos,
         });
     });
 });
