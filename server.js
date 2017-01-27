@@ -51,15 +51,15 @@ app.set('view engine', 'pug');
 app.locals.port = process.env.PORT || 8080;
 if (process.env.NODE_ENV === 'production') {
     app.locals.http = https;
-    const scheme = process.env.NODE_ENV == 'production' ? 'https' : 'http';
-    const hostname = process.env.NODE_ENV == 'production' ? 'api.spool.tv' : 'localhost';
-    const port = process.env.NODE_ENV == 'production' ? 443 : 5000;
+    const scheme = 'https';
+    const hostname = 'api.spool.tv';
+    const port = 443;
     app.locals.apiHost = `${scheme}://${hostname}:${port}`;
 } else {
     app.locals.http = http;
-    const scheme = process.env.NODE_ENV == 'production' ? 'https' : 'http';
-    const hostname = process.env.NODE_ENV == 'production' ? 'api.spool.tv' : 'localhost';
-    const port = process.env.NODE_ENV == 'production' ? 443 : 5000;
+    const scheme = 'http';
+    const hostname = 'localhost';
+    const port = 5000;
     app.locals.apiHost = `${scheme}://${hostname}:${port}`;
 }
 
