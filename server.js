@@ -148,6 +148,19 @@ app.get('/:artistId/:songId', (req, res) => {
                 });
             });
         },
+        genius: (callback) => {
+            const url = `${app.locals.apiHost}/v1/artists/${req.params.artistId}/songs/${req.params.songId}/genius`;
+            app.locals.http.get(url, (apiResponse) => {
+                let json = '';
+                apiResponse.on('data', (data) => {
+                    json += data;
+                });
+                apiResponse.on('end', () => {
+                    const description = JSON.parse(json).songs[0].description.plain;
+                    callback(null, description);
+                });
+            });
+        },
     },
     (err, results) => {
         const videos = [results.song].concat(results.songs);
