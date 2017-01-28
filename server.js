@@ -20,25 +20,25 @@
 
 
 
-import express from 'express';
 import http from 'http';
 import https from 'https';
 import path from 'path';
 
 import ReactDOMServer from 'react-dom/server';
+import express from 'express';
 import parallel from 'async/parallel';
+import webpack from 'webpack';
+import webpackDevMiddleware from 'webpack-dev-middleware';
+import webpackHotMiddleware from 'webpack-hot-middleware';
 
 import App from './src/index.jsx';
+import config from './webpack.config.babel.js';
 
 const app = express();
 
 
 
 if (process.env.NODE_ENV !== 'production') {
-    const webpackDevMiddleware = require('webpack-dev-middleware');
-    const webpackHotMiddleware = require('webpack-hot-middleware');
-    const webpack = require('webpack');
-    const config = require('./webpack.config.js');
     const compiler = webpack(config);
     app.use(webpackDevMiddleware(compiler, {
         publicPath: config.output.publicPath,

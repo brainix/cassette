@@ -21,6 +21,7 @@
 
 
 import path from 'path';
+
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import webpack from 'webpack';
 
@@ -45,12 +46,12 @@ module.exports = {
             new webpack.DefinePlugin({'process.env.NODE_ENV': NODE_ENV}),
             new ExtractTextPlugin('style.css', {allChunks: true}),
         ];
-        if (process.env.NODE_ENV == 'production') {
-            plugins.push(
-                new webpack.optimize.UglifyJsPlugin({
-                    compress: {warnings: false},
-                }),
-            );
+        if (process.env.NODE_ENV === 'production') {
+            // plugins.push(
+            //     new webpack.optimize.UglifyJsPlugin({
+            //         compress: {warnings: false},
+            //     }),
+            // );
         } else {
             plugins.push(
                 new webpack.HotModuleReplacementPlugin(),
