@@ -156,8 +156,12 @@ app.get('/:artistId/:songId', (req, res) => {
                     json += data;
                 });
                 apiResponse.on('end', () => {
-                    const description = JSON.parse(json).songs[0].description.plain;
-                    callback(null, description);
+                    try {
+                        const description = JSON.parse(json).songs[0].description.plain;
+                        callback(null, description);
+                    } catch (e) {
+                        callback(null, '');
+                    }
                 });
             });
         },
