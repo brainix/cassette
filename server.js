@@ -38,18 +38,6 @@ const app = express();
 
 
 
-if (process.env.NODE_ENV !== 'production') {
-    const compiler = webpack(config);
-    app.use(webpackDevMiddleware(compiler, {
-        publicPath: config.output.publicPath,
-        stats: {colors: true}
-    }));
-    app.use(webpackHotMiddleware(compiler));
-}
-
-app.set('view engine', 'pug');
-
-app.locals.port = process.env.PORT || 8080;
 if (process.env.NODE_ENV === 'production') {
     app.locals.http = https;
     const scheme = 'https';
@@ -65,6 +53,17 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 
+
+if (process.env.NODE_ENV !== 'production') {
+    const compiler = webpack(config);
+    app.use(webpackDevMiddleware(compiler, {
+        publicPath: config.output.publicPath,
+        stats: {colors: true}
+    }));
+    app.use(webpackHotMiddleware(compiler));
+}
+
+app.set('view engine', 'pug');
 
 app.get(['/robots.txt', '/humans.txt'], (req, res) => {
     const url = `${app.locals.apiHost}${req.path}`;
@@ -186,6 +185,7 @@ app.get('*', (req, res) => {
 
 
 
-app.listen(app.locals.port, () => {
-    console.log(`Listening at: http://127.0.0.1:${app.locals.port} (${process.pid})`);
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+    console.log(`Listening at: http://127.0.0.1:${port} (${process.pid})`);
 });
