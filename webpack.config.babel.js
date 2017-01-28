@@ -47,11 +47,11 @@ module.exports = {
             new ExtractTextPlugin('style.css', {allChunks: true}),
         ];
         if (process.env.NODE_ENV === 'production') {
-            // plugins.push(
-            //     new webpack.optimize.UglifyJsPlugin({
-            //         compress: {warnings: false},
-            //     }),
-            // );
+            plugins.push(
+                new webpack.optimize.UglifyJsPlugin({
+                    compress: {warnings: false},
+                }),
+            );
         } else {
             plugins.push(
                 new webpack.HotModuleReplacementPlugin(),
