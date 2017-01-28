@@ -186,5 +186,6 @@ app.get('*', (req, res) => {
 
 
 
-app.listen(app.locals.port);
-console.log(`Listening at: http://127.0.0.1:${app.locals.port} (${process.pid})`);
+app.listen(app.locals.port, () => {
+    console.log(`Listening at: http://127.0.0.1:${app.locals.port} (${process.pid})`);
+});
