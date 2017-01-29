@@ -41,6 +41,12 @@ if (process.env.NODE_ENV !== 'production') {
     app.use(webpackHotMiddleware(compiler));
 }
 
+app.use((err, req, res, next) => {
+    console.error(err);
+    const statusCode = err.status || 500;
+    res.status(statusCode).render(`${statusCode}`);
+});
+
 app.set('view engine', 'pug');
 app.use(router);
 

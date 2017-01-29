@@ -101,7 +101,7 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get('/:artistId/:songId', (req, res) => {
+router.get('/:artistId/:songId', (req, res, next) => {
     parallel({
         song: (callback) => {
             const url = `${apiHost}/v1/artists/${req.params.artistId}/songs/${req.params.songId}`;
@@ -148,14 +148,18 @@ router.get('/:artistId/:songId', (req, res) => {
         },
     },
     (err, results) => {
-        const videos = [results.song].concat(results.songs);
-        const component = App({videos: videos});
-        const rendered = ReactDOMServer.renderToString(component);
-        res.render('index', {
-            title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
-            app: rendered,
-            videos: videos,
-        });
+        try {
+            const videos = [results.song].concat(results.songs);
+            const component = App({videos: videos});
+            const rendered = ReactDOMServer.renderToString(component);
+            res.render('index', {
+                title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
+                app: rendered,
+                videos: videos,
+            });
+        } catch (err) {
+            next(err);
+        }
     });
 });
 
