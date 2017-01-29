@@ -20,37 +20,15 @@
 
 
 
-import http from 'http';
-import https from 'https';
-import path from 'path';
-
-import ReactDOMServer from 'react-dom/server';
 import express from 'express';
-import parallel from 'async/parallel';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 
-import App from './src/index.jsx';
 import config from './webpack.config.babel.js';
+import router from './routes.js';
 
 const app = express();
-
-
-
-if (process.env.NODE_ENV === 'production') {
-    app.locals.http = https;
-    const scheme = 'https';
-    const hostname = 'api.spool.tv';
-    const port = 443;
-    app.locals.apiHost = `${scheme}://${hostname}:${port}`;
-} else {
-    app.locals.http = http;
-    const scheme = 'http';
-    const hostname = 'localhost';
-    const port = 5000;
-    app.locals.apiHost = `${scheme}://${hostname}:${port}`;
-}
 
 
 
@@ -58,130 +36,13 @@ if (process.env.NODE_ENV !== 'production') {
     const compiler = webpack(config);
     app.use(webpackDevMiddleware(compiler, {
         publicPath: config.output.publicPath,
-        stats: {colors: true}
+        stats: {colors: true},
     }));
     app.use(webpackHotMiddleware(compiler));
 }
 
 app.set('view engine', 'pug');
-
-app.get(['/robots.txt', '/humans.txt'], (req, res) => {
-    const url = `${app.locals.apiHost}${req.path}`;
-    app.locals.http.get(url, (apiResponse) => {
-        let body = '';
-        apiResponse.on('data', (data) => {
-            body += data;
-        });
-        apiResponse.on('end', () => {
-            res.type('text/plain');
-            res.send(body);
-        });
-    });
-});
-
-app.get('/sitemap.xml', (req, res) => {
-    const url = `${app.locals.apiHost}/sitemap.xml`;
-    app.locals.http.get(url, (apiResponse) => {
-        let body = '';
-        apiResponse.on('data', (data) => {
-            body += data;
-        });
-        apiResponse.on('end', () => {
-            const find = process.env.NODE_ENV == 'production' ? /https:\/\/api.spool.tv\//g : /http:\/\/localhost:5000\//g;
-            const replace = process.env.NODE_ENV == 'production' ? 'https://spool.tv/' : 'http://localhost:8080/';
-            body = body.replace(find, replace);
-            body = body.replace(/\/v1\//g, '/');
-            body = body.replace(/\/artists\//g, '/');
-            body = body.replace(/\/songs\//g, '/');
-            res.type('application/xml');
-            res.send(body);
-        });
-    });
-});
-
-app.get('/', (req, res) => {
-    const url = `${app.locals.apiHost}/v1/songs`;
-    app.locals.http.get(url, (apiResponse) => {
-        let json = '';
-        apiResponse.on('data', (data) => {
-            json += data;
-        });
-        apiResponse.on('end', () => {
-            const videos = JSON.parse(json).songs;
-            const component = App({videos: videos});
-            const rendered = ReactDOMServer.renderToString(component);
-            res.render('index', {
-                title: 'Spool - Just music videos.',
-                app: rendered,
-                videos: videos,
-            });
-        });
-    });
-});
-
-app.get('/:artistId/:songId', (req, res) => {
-    parallel({
-        song: (callback) => {
-            const url = `${app.locals.apiHost}/v1/artists/${req.params.artistId}/songs/${req.params.songId}`;
-            app.locals.http.get(url, (apiResponse) => {
-                let json = '';
-                apiResponse.on('data', (data) => {
-                    json += data;
-                });
-                apiResponse.on('end', () => {
-                    const video = JSON.parse(json).songs[0];
-                    callback(null, video);
-                });
-            });
-        },
-        songs: (callback) => {
-            const url = `${app.locals.apiHost}/v1/songs`;
-            app.locals.http.get(url, (apiResponse) => {
-                let json = '';
-                apiResponse.on('data', (data) => {
-                    json += data;
-                });
-                apiResponse.on('end', () => {
-                    const videos = JSON.parse(json).songs;
-                    callback(null, videos);
-                });
-            });
-        },
-        genius: (callback) => {
-            const url = `${app.locals.apiHost}/v1/artists/${req.params.artistId}/songs/${req.params.songId}/genius`;
-            app.locals.http.get(url, (apiResponse) => {
-                let json = '';
-                apiResponse.on('data', (data) => {
-                    json += data;
-                });
-                apiResponse.on('end', () => {
-                    try {
-                        const description = JSON.parse(json).songs[0].description.plain;
-                        callback(null, description);
-                    } catch (e) {
-                        callback(null, '');
-                    }
-                });
-            });
-        },
-    },
-    (err, results) => {
-        const videos = [results.song].concat(results.songs);
-        const component = App({videos: videos});
-        const rendered = ReactDOMServer.renderToString(component);
-        res.render('index', {
-            title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
-            app: rendered,
-            videos: videos,
-        });
-    });
-});
-
-app.use(express.static(__dirname + '/public'));
-
-app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
-});
+app.use(router);
 
 
 
