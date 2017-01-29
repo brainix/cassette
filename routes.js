@@ -51,8 +51,8 @@ router.get(['/robots.txt', '/humans.txt'], (req, res) => {
     const url = `${apiHost}${req.path}`;
     agent.get(url, (apiResponse) => {
         let body = '';
-        apiResponse.on('data', (data) => {
-            body += data;
+        apiResponse.on('data', (chunk) => {
+            body += chunk;
         });
         apiResponse.on('end', () => {
             res.type('text/plain');
@@ -65,8 +65,8 @@ router.get('/sitemap.xml', (req, res) => {
     const url = `${apiHost}/sitemap.xml`;
     agent.get(url, (apiResponse) => {
         let body = '';
-        apiResponse.on('data', (data) => {
-            body += data;
+        apiResponse.on('data', (chunk) => {
+            body += chunk;
         });
         apiResponse.on('end', () => {
             const find = process.env.NODE_ENV == 'production' ? /https:\/\/api.spool.tv\//g : /http:\/\/localhost:5000\//g;
@@ -85,8 +85,8 @@ router.get('/', (req, res) => {
     const url = `${apiHost}/v1/songs`;
     agent.get(url, (apiResponse) => {
         let json = '';
-        apiResponse.on('data', (data) => {
-            json += data;
+        apiResponse.on('data', (chunk) => {
+            json += chunk;
         });
         apiResponse.on('end', () => {
             const videos = JSON.parse(json).songs;
@@ -107,8 +107,8 @@ router.get('/:artistId/:songId', (req, res) => {
             const url = `${apiHost}/v1/artists/${req.params.artistId}/songs/${req.params.songId}`;
             agent.get(url, (apiResponse) => {
                 let json = '';
-                apiResponse.on('data', (data) => {
-                    json += data;
+                apiResponse.on('data', (chunk) => {
+                    json += chunk;
                 });
                 apiResponse.on('end', () => {
                     const video = JSON.parse(json).songs[0];
@@ -120,8 +120,8 @@ router.get('/:artistId/:songId', (req, res) => {
             const url = `${apiHost}/v1/songs`;
             agent.get(url, (apiResponse) => {
                 let json = '';
-                apiResponse.on('data', (data) => {
-                    json += data;
+                apiResponse.on('data', (chunk) => {
+                    json += chunk;
                 });
                 apiResponse.on('end', () => {
                     const videos = JSON.parse(json).songs;
@@ -133,8 +133,8 @@ router.get('/:artistId/:songId', (req, res) => {
             const url = `${apiHost}/v1/artists/${req.params.artistId}/songs/${req.params.songId}/genius`;
             agent.get(url, (apiResponse) => {
                 let json = '';
-                apiResponse.on('data', (data) => {
-                    json += data;
+                apiResponse.on('data', (chunk) => {
+                    json += chunk;
                 });
                 apiResponse.on('end', () => {
                     try {
