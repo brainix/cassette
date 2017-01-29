@@ -81,6 +81,11 @@ router.get('/sitemap.xml', (req, res) => {
     });
 });
 
+router.get('/gtfo', (req, res) => {
+    const url = `${apiHost}/v1/gtfo`;
+    res.redirect(url);
+});
+
 router.get('/', (req, res) => {
     const url = `${apiHost}/v1/songs`;
     agent.get(url, (apiResponse) => {
