@@ -44,10 +44,11 @@ module.exports = {
     plugins: ((() => {
         const plugins = [
             new webpack.DefinePlugin({'process.env.NODE_ENV': NODE_ENV}),
-            new ExtractTextPlugin('style.css', {allChunks: true}),
+            new ExtractTextPlugin({filename: 'style.css', allChunks: true}),
         ];
         if (process.env.NODE_ENV === 'production') {
             plugins.push(
+                new webpack.LoaderOptionsPlugin({minimize: true}),
                 new webpack.optimize.UglifyJsPlugin({
                     compress: {warnings: false},
                 }),
@@ -55,25 +56,25 @@ module.exports = {
         } else {
             plugins.push(
                 new webpack.HotModuleReplacementPlugin(),
-                new webpack.NoErrorsPlugin(),
+                new webpack.NoEmitOnErrorsPlugin(),
             );
         }
         return plugins;
     })()),
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.scss$/,
                 include: SRC_DIR,
-                loader: ExtractTextPlugin.extract(
-                    'style-loader',
-                    'css-loader!postcss-loader!sass-loader',
-                ),
+                loader: ExtractTextPlugin.extract({
+                    fallbackLoader: 'style-loader',
+                    loader: 'css-loader!postcss-loader!sass-loader',
+                }),
             },
             {
                 test: /\.jsx?$/,
                 include: SRC_DIR,
-                loader: 'babel',
+                loader: 'babel-loader',
             },
         ],
     },
