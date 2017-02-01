@@ -47,12 +47,7 @@ module.exports = {
             new ExtractTextPlugin({filename: 'style.css', allChunks: true}),
         ];
         if (process.env.NODE_ENV === 'production') {
-            plugins.push(
-                new webpack.LoaderOptionsPlugin({minimize: true}),
-                new webpack.optimize.UglifyJsPlugin({
-                    compress: {warnings: false},
-                }),
-            );
+            plugins.push(new webpack.optimize.UglifyJsPlugin());
         } else {
             plugins.push(
                 new webpack.HotModuleReplacementPlugin(),
