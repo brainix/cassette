@@ -99,6 +99,7 @@ router.get('/', (req, res) => {
             const rendered = ReactDOMServer.renderToString(component);
             res.render('index', {
                 title: 'Spool - Just music videos.',
+                twitterCard: {},
                 app: rendered,
                 videos: videos,
             });
@@ -159,6 +160,10 @@ router.get('/:artistId/:songId', (req, res, next) => {
             const rendered = ReactDOMServer.renderToString(component);
             res.render('index', {
                 title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
+                twitterCard: {
+                    title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
+                    description: results.genius,
+                },
                 app: rendered,
                 videos: videos,
             });
