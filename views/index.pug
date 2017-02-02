@@ -28,13 +28,14 @@ html
         meta(charset='utf-8')
         title= title
         link(rel='stylesheet', href='/style.css')
+        link(rel='icon', href='/icon.png')
 
         // Twitter Summary Card
         meta(name='twitter:card' content='summary')
         meta(name='twitter:site' content='@brainix')
-        meta(name='twitter:title' content=twitterCard.title || 'Spool - Just music videos.')
-        meta(name='twitter:description' content=twitterCard.description || "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.")
-        meta(name='twitter:image' content=twitterCard.image || videos[0].artwork_url)
+        meta(name='twitter:title' content=twitterCard.title)
+        meta(name='twitter:description' content=twitterCard.description)
+        meta(name='twitter:image' content=twitterCard.image)
 
     body
         #app!= app

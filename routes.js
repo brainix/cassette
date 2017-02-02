@@ -36,13 +36,16 @@ const router = express.Router();
 
 let agent;
 let apiHost;
+let webHost;
 
 if (process.env.NODE_ENV === 'production') {
     agent = https;
     apiHost = 'https://api.spool.tv';
+    webHost = 'https://spool.tv';
 } else {
     agent = http;
     apiHost = 'http://localhost:5000';
+    webHost = 'http://localhost:8080';
 }
 
 
@@ -99,7 +102,11 @@ router.get('/', (req, res) => {
             const rendered = ReactDOMServer.renderToString(component);
             res.render('index', {
                 title: 'Spool - Just music videos.',
-                twitterCard: {},
+                twitterCard: {
+                    title: 'Spool - Just music videos.',
+                    description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
+                    image: `${webHost}/avatar.png`,
+                },
                 app: rendered,
                 videos: videos,
             });
@@ -163,6 +170,7 @@ router.get('/:artistId/:songId', (req, res, next) => {
                 twitterCard: {
                     title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
                     description: results.genius,
+                    image: videos[0].artwork_url,
                 },
                 app: rendered,
                 videos: videos,
