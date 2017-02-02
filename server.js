@@ -20,6 +20,7 @@
 
 
 
+import compression from 'compression';
 import express from 'express';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
@@ -32,7 +33,9 @@ const app = express();
 
 
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'production') {
+    app.use(compression);
+} else {
     const compiler = webpack(config);
     app.use(webpackDevMiddleware(compiler, {
         publicPath: config.output.publicPath,
