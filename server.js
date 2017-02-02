@@ -34,7 +34,7 @@ const app = express();
 
 
 if (process.env.NODE_ENV === 'production') {
-    app.use(compression);
+    app.use(compression());
 } else {
     const compiler = webpack(config);
     app.use(webpackDevMiddleware(compiler, {
