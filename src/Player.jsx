@@ -43,9 +43,9 @@ class Player extends React.Component {
 
     onKeyUp(eventObject) {
         if (this.refs.buffer && document.activeElement === document.body) {
-            if (this.NEXT_KEYS.indexOf(eventObject.which) !== -1) {
+            if (this.NEXT_KEYS.includes(eventObject.which)) {
                 this.refs.buffer.nextVideo();
-            } else if (this.PREV_KEYS.indexOf(eventObject.which) !== -1) {
+            } else if (this.PREV_KEYS.includes(eventObject.which)) {
                 this.refs.buffer.prevVideo();
             }
         }

@@ -132,6 +132,7 @@ class Input extends React.PureComponent {
         } else {
             this.API = 'http://localhost:5000/v1';
         }
+        this.GTFO_KEYS = [27];
         this.onKeyPress = this.onKeyPress.bind(this);
         this.onFocus = this.onFocus.bind(this);
         this.onBlur = this.onBlur.bind(this);
@@ -162,6 +163,8 @@ class Input extends React.PureComponent {
         const c = String.fromCharCode(eventObject.which);
         if (c && /^[0-9a-z]+$/i.test(c) && !this.$input.is('focus')) {
             this.$input.focus();
+        } else if (this.GTFO_KEYS.includes(eventObject.which)) {
+            window.location = '/gtfo';
         }
     }
 
@@ -297,17 +300,17 @@ class Results extends React.PureComponent {
 
     onKeyDown(eventObject) {
         if (this.props.results.length &&
-            this.UP_KEYS.indexOf(eventObject.which) !== -1 ||
-            this.DOWN_KEYS.indexOf(eventObject.which) !== -1) {
+            this.UP_KEYS.includes(eventObject.which) ||
+            this.DOWN_KEYS.includes(eventObject.which)) {
             eventObject.preventDefault();
         }
     }
 
     onKeyUp(eventObject) {
         if (this.props.results.length) {
-            if (this.UP_KEYS.indexOf(eventObject.which) !== -1) {
+            if (this.UP_KEYS.includes(eventObject.which)) {
                 this.updateSelected(-1);
-            } else if (this.DOWN_KEYS.indexOf(eventObject.which) !== -1) {
+            } else if (this.DOWN_KEYS.includes(eventObject.which)) {
                 this.updateSelected(1);
             }
         }
