@@ -102,6 +102,15 @@ router.get('/', (req, res) => {
             const rendered = ReactDOMServer.renderToString(component);
             res.render('index', {
                 title: 'Spool - Just music videos.',
+                openGraph: {
+                    title: 'Spool - Just music videos.',
+                    type: 'website',
+                    image: `${webHost}/avatar.png`,
+                    url: `${webHost}/`,
+                    description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
+                    siteName: 'Spool',
+                    video: null,
+                },
                 twitterCard: {
                     title: 'Spool - Just music videos.',
                     description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
@@ -167,6 +176,15 @@ router.get('/:artistId/:songId', (req, res, next) => {
             const rendered = ReactDOMServer.renderToString(component);
             res.render('index', {
                 title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
+                openGraph: {
+                    title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
+                    type: 'website',
+                    image: videos[0].artwork_url,
+                    url: `${webHost}/${req.params.artistId}/${req.params.songId}`,
+                    description: results.genius,
+                    siteName: 'Spool',
+                    video: videos[0].mp4_url,
+                },
                 twitterCard: {
                     title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
                     description: results.genius,

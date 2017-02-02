@@ -30,7 +30,17 @@ html
         link(rel='stylesheet', href='/style.css')
         link(rel='icon', href='/icon.png')
 
-        // Twitter Summary Card
+        //- Open Graph Metadata
+        meta(property='og:title' content=openGraph.title)
+        meta(property='og:type' content=openGraph.type)
+        meta(property='og:image' content=openGraph.image)
+        meta(property='og:url' content=openGraph.url)
+        meta(property='og:description' content=openGraph.description)
+        meta(property='og:site_name' content=openGraph.siteName)
+        if openGraph.video
+            meta(property='og:video' content=openGraph.video)
+
+        //- Twitter Summary Card
         meta(name='twitter:card' content='summary')
         meta(name='twitter:site' content='@brainix')
         meta(name='twitter:title' content=twitterCard.title)
