@@ -224,6 +224,7 @@ class Video extends React.Component {
                 loop
                 autoPlay={this.props.state === 'buffering' ? null : 'autoplay'}
                 muted={this.props.state !== 'playing'}
+                playsInline
                 onMouseDown={this.onMouseDown}
             />
         );
