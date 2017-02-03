@@ -197,13 +197,11 @@ class Video extends React.Component {
         this.updateUrlAndTitle();
     }
 
-    onMouseDown() {
+    onMouseDown(eventObject) {
         if (this.props.state === 'playing') {
-            const video = document.getElementsByTagName('video')[0];
-            if (video.paused) {
-                video.play();
-            }
-            else if (document.activeElement === document.body) {
+            if (eventObject.target.paused) {
+                eventObject.target.play();
+            } else if (document.activeElement === document.body) {
                 this.props.nextVideo();
             } else {
                 this.props.resetSearch();
