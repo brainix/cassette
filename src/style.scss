@@ -24,6 +24,17 @@
 
 
 
+// CSS media queries to detect device type
+$device-mobile: 'only screen and (max-device-width: 640px)';
+$device-tablet: 'only screen and (min-device-width : 641px) and (max-device-width: 1279px)';
+$device-desktop: 'only screen and (min-device-width: 1280px)';
+
+// CSS media queries to detect device orientation
+$orientation-portrait: '(orientation: portrait)';
+$orientation-landscape: '(orientation: landscape)';
+
+
+
 // Inline http://fonts.googleapis.com/css?family=Lato:300,400,700
 @font-face {
     font-family: 'Lato';
@@ -51,6 +62,13 @@ body {
     color: white;
     font: 24px 'Lato', sans-serif;
     text-transform: lowercase;
+
+    @media #{$device-tablet} {
+        font-size: 18px;
+    }
+    @media #{$device-mobile} {
+        font-size: 12px;
+    }
 
     a {
         color: white;
@@ -88,6 +106,13 @@ form {
     width: 20em;
     font-weight: 300;
 
+    @media #{$device-tablet} {
+        margin: 18px;
+    }
+    @media #{$device-mobile} {
+        margin: 12px;
+    }
+
     fieldset {
         margin: 0;
         border: 0;
@@ -105,6 +130,15 @@ form {
             font-weight: 700;
             text-transform: lowercase;
             transition: all 0.2s ease 0s;
+
+            @media #{$device-tablet} {
+                border-radius: 1.5px;
+                padding: 3px 6px;
+            }
+            @media #{$device-mobile} {
+                border-radius: 1px;
+                padding: 2px 4px;
+            }
 
             &::-webkit-input-placeholder {
                 font-weight: 300;
@@ -129,6 +163,13 @@ form {
     ol {
         padding: 0 9px;
 
+        @media #{$device-tablet} {
+            padding: 0 6.75px;
+        }
+        @media #{$device-mobile} {
+            padding: 0 4.5px;
+        }
+
         li {
             margin: 0.5em 0;
             list-style-type: none;
@@ -136,6 +177,13 @@ form {
             overflow: hidden;
             text-overflow: ellipsis;
             line-height: 1.25;
+
+            @media #{$device-tablet} {
+                margin: 0.375em 0;
+            }
+            @media #{$device-mobile} {
+                margin: 0.25em 0;
+            }
 
             &:last-of-type {
                 margin: 0;
@@ -156,6 +204,13 @@ section {
     position: relative;
     margin: 24px;
 
+    @media #{$device-tablet} {
+        margin: 18px;
+    }
+    @media #{$device-mobile} {
+        margin: 12px;
+    }
+
     h1, h2 {
         margin: 0 0 48px;
         width: 768px;
@@ -165,6 +220,17 @@ section {
         font-size: 64px;
         font-weight: 700;
         text-transform: uppercase;
+
+        @media #{$device-tablet} {
+            margin-bottom: 36px;
+            width: 576px;
+            font-size: 48px;
+        }
+        @media #{$device-mobile} {
+            margin-bottom: 24px;
+            width: 384px;
+            font-size: 32px;
+        }
     }
 
     h2 {
@@ -172,6 +238,15 @@ section {
         font-size: 32px;
         font-weight: 400;
         text-transform: none;
+
+        @media #{$device-tablet} {
+            margin-bottom: 18px;
+            font-size: 24px;
+        }
+        @media #{$device-mobile} {
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
     }
 
     p {
@@ -179,6 +254,15 @@ section {
         max-width: 640px;
         line-height: 1.5;
         text-transform: none;
+
+        @media #{$device-tablet} {
+            margin-bottom: 36px;
+            max-width: 480px;
+        }
+        @media #{$device-mobile} {
+            margin-bottom: 24px;
+            max-width: 320px;
+        }
 
         &:last-of-type {
             margin: 0;
@@ -192,7 +276,21 @@ section {
     bottom: 0;
     margin: 24px;
 
+    @media #{$device-tablet} {
+        margin: 18px;
+    }
+    @media #{$device-mobile} {
+        margin: 12px;
+    }
+
     img {
         height: 72px;
+
+        @media #{$device-tablet} {
+            height: 54px;
+        }
+        @media #{$device-mobile} {
+            height: 36px;
+        }
     }
 }

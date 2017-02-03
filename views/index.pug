@@ -47,6 +47,9 @@ html
         meta(name='twitter:description' content=twitterCard.description)
         meta(name='twitter:image' content=twitterCard.image)
 
+        //- Mobile Safari
+        meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+
     body
         #app!= app
         script.
