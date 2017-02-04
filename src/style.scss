@@ -63,9 +63,6 @@ body {
     font: 24px 'Lato', sans-serif;
     text-transform: lowercase;
 
-    @media #{$device-tablet} {
-        font-size: 18px;
-    }
     @media #{$device-mobile} {
         font-size: 12px;
     }
@@ -106,9 +103,6 @@ form {
     width: 20em;
     font-weight: 300;
 
-    @media #{$device-tablet} {
-        margin: 18px;
-    }
     @media #{$device-mobile} {
         margin: 12px;
     }
@@ -131,10 +125,6 @@ form {
             text-transform: lowercase;
             transition: all 0.2s ease 0s;
 
-            @media #{$device-tablet} {
-                border-radius: 1.5px;
-                padding: 3px 6px;
-            }
             @media #{$device-mobile} {
                 border-radius: 1px;
                 padding: 2px 4px;
@@ -163,9 +153,6 @@ form {
     ol {
         padding: 0 9px;
 
-        @media #{$device-tablet} {
-            padding: 0 6.75px;
-        }
         @media #{$device-mobile} {
             padding: 0 4.5px;
         }
@@ -178,9 +165,6 @@ form {
             text-overflow: ellipsis;
             line-height: 1.25;
 
-            @media #{$device-tablet} {
-                margin: 0.375em 0;
-            }
             @media #{$device-mobile} {
                 margin: 0.25em 0;
             }
@@ -204,9 +188,6 @@ section {
     position: relative;
     margin: 24px;
 
-    @media #{$device-tablet} {
-        margin: 18px;
-    }
     @media #{$device-mobile} {
         margin: 12px;
     }
@@ -221,11 +202,6 @@ section {
         font-weight: 700;
         text-transform: uppercase;
 
-        @media #{$device-tablet} {
-            margin-bottom: 36px;
-            width: 576px;
-            font-size: 48px;
-        }
         @media #{$device-mobile} {
             margin-bottom: 24px;
             width: 384px;
@@ -239,10 +215,6 @@ section {
         font-weight: 400;
         text-transform: none;
 
-        @media #{$device-tablet} {
-            margin-bottom: 18px;
-            font-size: 24px;
-        }
         @media #{$device-mobile} {
             margin-bottom: 12px;
             font-size: 16px;
@@ -255,10 +227,6 @@ section {
         line-height: 1.5;
         text-transform: none;
 
-        @media #{$device-tablet} {
-            margin-bottom: 36px;
-            max-width: 480px;
-        }
         @media #{$device-mobile} {
             margin-bottom: 24px;
             max-width: 320px;
@@ -276,9 +244,6 @@ section {
     bottom: 0;
     margin: 24px;
 
-    @media #{$device-tablet} {
-        margin: 18px;
-    }
     @media #{$device-mobile} {
         margin: 12px;
     }
@@ -286,9 +251,6 @@ section {
     img {
         height: 72px;
 
-        @media #{$device-tablet} {
-            height: 54px;
-        }
         @media #{$device-mobile} {
             height: 36px;
         }
