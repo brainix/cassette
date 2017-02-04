@@ -1,6 +1,6 @@
 //-
  *---------------------------------------------------------------------------*
- |  index.pug                                                                |
+ |  facebook.pug                                                             |
  |                                                                           |
  |  Copyright © 2016-2017, Rajiv Bakulesh Shah, original author.             |
  |                                                                           |
@@ -21,12 +21,13 @@
 
 
 
-extends layout.pug
-
-
-
-block content
-    #app!= app
-    script.
-        videos = !{JSON.stringify(videos)};
-
+//- Open Graph Metadata
+if openGraph
+    meta(property='og:title' content=openGraph.title)
+    meta(property='og:type' content=openGraph.type)
+    meta(property='og:image' content=openGraph.image)
+    meta(property='og:url' content=openGraph.url)
+    meta(property='og:description' content=openGraph.description)
+    meta(property='og:site_name' content=openGraph.siteName)
+    if openGraph.video
+        meta(property='og:video' content=openGraph.video)
