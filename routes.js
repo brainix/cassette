@@ -102,6 +102,7 @@ router.get('/', (req, res) => {
             const rendered = ReactDOMServer.renderToString(component);
             res.render('index', {
                 title: 'Spool - Just music videos.',
+                description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
                 openGraph: {
                     title: 'Spool - Just music videos.',
                     type: 'website',
@@ -176,6 +177,7 @@ router.get('/:artistId/:songId', (req, res, next) => {
             const rendered = ReactDOMServer.renderToString(component);
             res.render('index', {
                 title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
+                description: results.genius,
                 openGraph: {
                     title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
                     type: 'website',
