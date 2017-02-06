@@ -26,6 +26,6 @@ extends layout.pug
 
 
 block content
-    section: h1 #{heading}
     video.background(src=videos[0].mp4_url, preload='auto', loop, autoplay, muted, playsinline)
+    section: h1 #{heading}
     a#logo(href='/'): img(src='/logo.png', alt='Home', title='Home')

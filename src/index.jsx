@@ -68,9 +68,6 @@ function App(props) {
                 <Route path='/wtf' component={About} {...props} />
                 <Route path='/404' component={NotFound} {...props} />
                 <Route path='*' component={NotFound} {...props} />
-                ['/404', '*'].map(
-                    path => <Route path='*' component={NotFound} {...props} />
-                );
             </Route>
         </Router>
     );
