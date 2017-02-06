@@ -203,8 +203,46 @@ router.get('/:artistId/:songId', (req, res, next) => {
 
 router.use(express.static(__dirname + '/public'));
 
-router.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+router.use((req, res) => {
+    const url = `${apiHost}/v1/songs`;
+    agent.get(url, (apiResponse) => {
+        let json = '';
+        apiResponse.on('data', (chunk) => {
+            json += chunk;
+        });
+        apiResponse.on('end', () => {
+            const videos = JSON.parse(json).songs;
+            const component = App({videos: videos});
+            const rendered = ReactDOMServer.renderToString(component);
+            res.status(404).render('error', {
+                title: 'Spool - Not Found',
+                heading: 'Not Found',
+                app: rendered,
+                videos: videos,
+            });
+        });
+    });
+});
+
+router.use((err, req, res, next) => {
+    const url = `${apiHost}/v1/songs`;
+    agent.get(url, (apiResponse) => {
+        let json = '';
+        apiResponse.on('data', (chunk) => {
+            json += chunk;
+        });
+        apiResponse.on('end', () => {
+            const videos = JSON.parse(json).songs;
+            const component = App({videos: videos});
+            const rendered = ReactDOMServer.renderToString(component);
+            res.status(500).render('error', {
+                title: 'Spool - Server Error',
+                heading: 'Server Error',
+                app: rendered,
+                videos: videos,
+            });
+        });
+    });
 });
 
 

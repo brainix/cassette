@@ -1,6 +1,6 @@
 //-
  *---------------------------------------------------------------------------*
- |  index.pug                                                                |
+ |  error.pug                                                                |
  |                                                                           |
  |  Copyright © 2016-2017, Rajiv Bakulesh Shah, original author.             |
  |                                                                           |
@@ -26,11 +26,6 @@ extends layout.pug
 
 
 block content
-    #app!= app
-    script.
-        videos = !{JSON.stringify(videos)};
-
-
-
-block script
-    script(src='/bundle.js')
+    section: h1 #{heading}
+    video.background(src=videos[0].mp4_url, preload='auto', loop, autoplay, muted, playsinline)
+    a#logo(href='/'): img(src='/logo.png', alt='Home', title='Home')
