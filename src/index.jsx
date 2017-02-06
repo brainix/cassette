@@ -66,15 +66,17 @@ function App(props) {
                 <IndexRoute component={Home} {...props} />
                 <Route path='/:artistId/:songId' component={Home} {...props} />
                 <Route path='/wtf' component={About} {...props} />
-                <Route path='*' component={NotFound} {...props} />
+                ['/404', '*'].map(
+                    path => <Route path='*' component={NotFound} {...props} />
+                );
             </Route>
         </Router>
     );
 }
 
 function Chrome(props) {
-    const linkTo = props.location.pathname === 'wtf' ? '/' : '/wtf';
-    const alt = props.location.pathname === 'wtf' ? 'Home' : 'WTF?';
+    const linkTo = ['wtf', '404'].includes(props.location.pathname) ? '/' : '/wtf';
+    const alt = ['wtf', '404'].includes(props.location.pathname) ? 'Home' : 'WTF?';
     return (
         <div>
             {props.children}

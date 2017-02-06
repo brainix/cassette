@@ -112,6 +112,9 @@ class Buffer extends React.Component {
                         this.moreVideos(true);
                     }
                 );
+                this.serverRequest.fail(() => {
+                    this.context.router.push('/404');
+                });
             } else {
                 this.moreVideos(true);
             }
@@ -180,6 +183,8 @@ class Buffer extends React.Component {
         return <div>{videos}</div>;
     }
 }
+
+Buffer.contextTypes = {router: React.PropTypes.object};
 
 
 
