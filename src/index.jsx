@@ -66,8 +66,9 @@ function App(props) {
                 <IndexRoute component={Home} {...props} />
                 <Route path='/:artistId/:songId' component={Home} {...props} />
                 <Route path='/wtf' component={About} {...props} />
-                <Route path='/404' component={NotFound} {...props} />
-                <Route path='*' component={NotFound} {...props} />
+                {['/404', '*'].map(path =>
+                    <Route path={path} component={NotFound} {...props} />
+                )}
             </Route>
         </Router>
     );
