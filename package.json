@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "webpack -d --watch",
     "postinstall": "webpack -p --progress --colors",
-    "start": "babel-node server.js",
+    "start": "babel-node server.jsx",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -38,7 +38,7 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-router": "^3.0.2",
-    "sass-loader": "^5.0.0",
+    "sass-loader": "^5.0.1",
     "style-loader": "^0.13.1",
     "webpack": "^2.2.1",
     "webpack-dev-middleware": "^1.10.0",

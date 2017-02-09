@@ -22,10 +22,11 @@
 
 import path from 'path';
 
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import webpack from 'webpack';
+import ExtractTextPlugin from 'extract-text-webpack-plugin';
 
-const SRC_DIR = path.resolve(__dirname, 'src');
+const SHARED_DIR = path.resolve(__dirname, 'shared');
+const CLIENT_DIR = path.resolve(__dirname, 'client');
 const BUILD_DIR = path.resolve(__dirname, 'public');
 const NODE_ENV = JSON.stringify(process.env.NODE_ENV || 'development');
 
@@ -33,9 +34,10 @@ const NODE_ENV = JSON.stringify(process.env.NODE_ENV || 'development');
 
 module.exports = {
     entry: [
-        SRC_DIR + '/style.scss',
-        SRC_DIR + '/index.jsx',
+        CLIENT_DIR + '/style.scss',
+        CLIENT_DIR + '/index.jsx',
     ],
+    resolve: {modules: ['node_modules', 'shared']},
     output: {
         path: BUILD_DIR,
         publicPath: '/',
@@ -60,7 +62,7 @@ module.exports = {
         rules: [
             {
                 test: /\.scss$/,
-                include: SRC_DIR,
+                include: CLIENT_DIR,
                 loader: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: 'css-loader!postcss-loader!sass-loader',
@@ -68,7 +70,7 @@ module.exports = {
             },
             {
                 test: /\.jsx?$/,
-                include: SRC_DIR,
+                include: [SHARED_DIR, CLIENT_DIR],
                 loader: 'babel-loader',
             },
         ],

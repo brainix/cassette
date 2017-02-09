@@ -20,11 +20,30 @@
 
 
 
-import $ from 'jquery';
 import React from 'react';
-import {render} from 'react-dom';
+import $ from 'jquery';
 import Link from 'react-router/lib/Link';
 import withRouter from 'react-router/lib/withRouter';
+import {render} from 'react-dom';
+
+
+
+String.prototype.trimAll = function () {
+    const s = this.trim();
+    s.replace(/\s+/g, ' ');
+    return s;
+};
+
+String.prototype.htmlToText = function () {
+    const s = this.replace(/<[^>]*\/?>/g, '')   // HTML open and self-closing tags
+        .replace(/<\/[a-z]*>/ig, '')            // HTML close tags
+        .replace(/\&mdash;/ig, '-');
+    return s;
+}
+
+Array.prototype.choice = function () {
+        return this[Math.floor(Math.random() * this.length)];
+};
 
 
 
@@ -104,7 +123,7 @@ class Precache extends React.PureComponent {
 
     getQueries() {
         this.serverRequest = $.get(
-            this.API + '/queries',
+            `${this.API}/queries`,
             (result) => this.cacheQueries(result.queries),
         );
     }
@@ -112,7 +131,7 @@ class Precache extends React.PureComponent {
     cacheQueries(queries) {
         if (queries.length) {
             const query = queries.shift();
-            this.serverRequest = $.get(this.API + '/songs/search', {q: query})
+            this.serverRequest = $.get(`${this.API}/songs/search`, {q: query})
                 .always(() => this.cacheQueries(queries));
         }
     }
@@ -189,11 +208,11 @@ class Input extends React.PureComponent {
             }
             if (easterEgg === null) {
                 this.serverRequest = $.get(
-                    this.API + '/songs/search',
+                    `${this.API}/songs/search`,
                     {q: query},
                     (result) => this.props.updateState({results: result.songs}),
                 )
-                    .always(() => $.post(this.API + '/queries', {q: query}));
+                    .always(() => $.post(`${this.API}/queries`, {q: query}));
             } else {
                 this.props.updateState({results: easterEgg});
             }

@@ -20,10 +20,10 @@
 
 
 
-import $ from 'jquery';
 import React from 'react';
-import {render} from 'react-dom';
+import $ from 'jquery';
 import browserHistory from 'react-router/lib/browserHistory';
+import {render} from 'react-dom';
 
 
 
@@ -106,7 +106,7 @@ class Buffer extends React.Component {
             if (this.props.artistId && this.props.songId) {
                 const {artistId, songId} = this.props;
                 this.serverRequest = $.get(
-                    this.API + `/artists/${artistId}/songs/${songId}`,
+                    `${this.API}/artists/${artistId}/songs/${songId}`,
                     (result) => {
                         this.videos = [result.songs[0]];
                         this.moreVideos(true);
@@ -126,7 +126,7 @@ class Buffer extends React.Component {
             this.serverRequest.abort();
         }
         this.serverRequest = $.get(
-            this.API + '/songs',
+            `${this.API}/songs`,
             (result) => {
                 this.videos = this.videos.concat(result.songs);
                 if (init) {

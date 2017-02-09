@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
- |  server.js                                                                |
+ |  Chrome.jsx                                                               |
  |                                                                           |
  |  Copyright © 2016-2017, Rajiv Bakulesh Shah, original author.             |
  |                                                                           |
@@ -20,42 +20,24 @@
 
 
 
-import compression from 'compression';
-import express from 'express';
-import webpack from 'webpack';
-import webpackDevMiddleware from 'webpack-dev-middleware';
-import webpackHotMiddleware from 'webpack-hot-middleware';
-
-import config from './webpack.config.babel.js';
-import router from './routes.js';
-
-const app = express();
+import React from 'react';
+import Link from 'react-router/lib/Link';
 
 
 
-if (process.env.NODE_ENV === 'production') {
-    app.use(compression());
-} else {
-    const compiler = webpack(config);
-    app.use(webpackDevMiddleware(compiler, {
-        publicPath: config.output.publicPath,
-        stats: {colors: true},
-    }));
-    app.use(webpackHotMiddleware(compiler));
+export default (props) => {
+    let linkTo, alt;
+    if (['/wtf', 'wtf'].includes(props.location.pathname)) {
+        [linkTo, alt] = ['/', 'Home'];
+    } else {
+        [linkTo, alt] = ['/wtf', 'WTF?'];
+    }
+    return (
+        <div>
+            {props.children}
+            <Link id='logo' to={linkTo}>
+                <img src='/logo.png' alt={alt} title={alt} />
+            </Link>
+        </div>
+    );
 }
-
-app.use((err, req, res, next) => {
-    console.error(err);
-    const statusCode = err.status || 500;
-    res.status(statusCode).render(`${statusCode}`);
-});
-
-app.set('view engine', 'pug');
-app.use(router);
-
-
-
-const port = process.env.PORT || 8080;
-app.listen(port, () => {
-    console.log(`Listening at: http://127.0.0.1:${port} (${process.pid})`);
-});
