@@ -94,13 +94,15 @@ app.use((req, res, next) => {
 
 const getSong = (props, res, next) => {
     let {artistId, songId} = props.params;
-    const songRequest = makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}`);
-    const songsRequest = makeRequest(`${API_HOST}/v1/songs`);
-    const geniusRequest = makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`);
-    Promise.all([songRequest, songsRequest, geniusRequest]).then(values => {
+    const songReq = makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}`);
+    const songsReq = makeRequest(`${API_HOST}/v1/songs`);
+    const geniusReq = makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`);
+    Promise.all([songReq, songsReq, geniusReq]).then(values => {
         try {
-            const [songResponse, songsResponse, geniusResponse] = values.map(JSON.parse);
-            const [song, songs, genius] = [songResponse.songs[0], songsResponse.songs, geniusResponse.songs[0].description.plain];
+            const [songRes, songsRes, geniusRes] = values.map(JSON.parse);
+            const song = songRes.songs[0];
+            const songs = songsRes.songs;
+            const genius = geniusRes.songs[0].description.plain;
             const component = <RouterContext {...props} />;
             const rendered = ReactDOMServer.renderToString(component);
             const videos = [song].concat(songs);
