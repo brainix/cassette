@@ -179,7 +179,7 @@ app.use((err, req, res, next) => {
     console.error(err);
     makeRequest(`${API_HOST}/v1/songs`).then(json => {
         const videos = JSON.parse(json).songs;
-        res.status(404).render('error', {
+        res.status(500).render('error', {
             title: 'Spool - Server Error',
             heading: 'Server Error',
             videos: videos,
