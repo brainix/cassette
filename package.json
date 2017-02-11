@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "webpack -d --watch",
     "postinstall": "webpack -p --progress --colors",
-    "start": "babel-node server.jsx",
+    "start": "babel-node server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

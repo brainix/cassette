@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
- |  server.jsx                                                               |
+ |  routes.jsx                                                               |
  |                                                                           |
  |  Copyright © 2016-2017, Rajiv Bakulesh Shah, original author.             |
  |                                                                           |
@@ -21,16 +21,21 @@
 
 
 import express from 'express';
-import compression from 'compression';
-import webpack from 'webpack';
-import webpackDevMiddleware from 'webpack-dev-middleware';
-import webpackHotMiddleware from 'webpack-hot-middleware';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import {memoryHistory, match, RouterContext} from 'react-router';
 
-import config from './webpack.config.babel';
-import routes from './shared/routes';
+import routes from '../shared/routes.jsx';
+
+
+
+const router = express.Router();
+let API_HOST, WEB_HOST;
+if (process.env.NODE_ENV === 'production') {
+    [API_HOST, WEB_HOST] = ['https://api.spool.tv', 'https://spool.tv'];
+} else {
+    [API_HOST, WEB_HOST] = ['http://localhost:5000', 'http://localhost:8080'];
+}
 
 
 
@@ -47,31 +52,7 @@ const makeRequest = url => {
 
 
 
-const app = express();
-let API_HOST, WEB_HOST;
-if (process.env.NODE_ENV === 'production') {
-    [API_HOST, WEB_HOST] = ['https://api.spool.tv', 'https://spool.tv'];
-} else {
-    [API_HOST, WEB_HOST] = ['http://localhost:5000', 'http://localhost:8080'];
-}
-
-
-
-if (process.env.NODE_ENV === 'production') {
-    app.use(compression());
-} else {
-    const compiler = webpack(config);
-    app.use(webpackDevMiddleware(compiler, {
-        publicPath: config.output.publicPath,
-        stats: {colors: true},
-    }));
-    app.use(webpackHotMiddleware(compiler));
-}
-app.set('view engine', 'pug');
-
-
-
-app.use((req, res, next) => {
+router.use((req, res, next) => {
     const history = memoryHistory, location = req.url;
     match({routes, history, location}, (err, redirect, props) => {
         if (err) {
@@ -159,13 +140,13 @@ const getSongs = (props, res, next) => {
     }).catch(next);
 };
 
-app.get(['/robots.txt', '/humans.txt'], (req, res, next) => {
+router.get(['/robots.txt', '/humans.txt'], (req, res, next) => {
     makeRequest(`${API_HOST}${req.path}`)
         .then(body => res.type('text/plain').send(body))
         .catch(next);
 });
 
-app.get('/sitemap.xml', (req, res, next) => {
+router.get('/sitemap.xml', (req, res, next) => {
     makeRequest(`${API_HOST}/sitemap.xml`).then(body => {
         const find = process.env.NODE_ENV == 'production' ? /https:\/\/api.spool.tv\//g : /http:\/\/localhost:5000\//g;
         const replace = process.env.NODE_ENV == 'production' ? 'https://spool.tv/' : 'http://localhost:8080/';
@@ -177,9 +158,9 @@ app.get('/sitemap.xml', (req, res, next) => {
     }).catch(next);
 });
 
-app.use(express.static(__dirname + '/public'));
+router.use(express.static(__dirname + '/../public'));
 
-app.use((req, res, next) => {
+router.use((req, res, next) => {
     makeRequest(`${API_HOST}/v1/songs`).then(json => {
         const videos = JSON.parse(json).songs;
         res.status(404).render('error', {
@@ -190,7 +171,7 @@ app.use((req, res, next) => {
     }).catch(next);
 });
 
-app.use((err, req, res, next) => {
+router.use((err, req, res, next) => {
     console.error(err);
     makeRequest(`${API_HOST}/v1/songs`).then(json => {
         const videos = JSON.parse(json).songs;
@@ -204,7 +185,4 @@ app.use((err, req, res, next) => {
 
 
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log(`Listening at: http://127.0.0.1:${PORT} (${process.pid})`);
-});
+export default router;
