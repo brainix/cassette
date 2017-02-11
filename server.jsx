@@ -34,15 +34,22 @@ import routes from './shared/routes';
 
 
 
-const makeRequest = url => {
+const apiRequest = url => {
     return new Promise((resolve, reject) => {
         const http = require(url.startsWith('https') ? 'https' : 'http');
-        const request = http.get(url, response => {
-            const body = [];
-            response.on('data', chunk => body.push(chunk));
-            response.on('end', () => resolve(body.join('')));
-        });
-        request.on('error', err => reject(err));
+        http.get(url, response => {
+            const chunks = [];
+            response.on('data', chunk => chunks.push(chunk));
+            response.on('end', () => {
+                try {
+                    const json = chunks.join('');
+                    const obj = JSON.parse(json);
+                    resolve(obj);
+                } catch (err) {
+                    reject(err);
+                }
+            });
+        }).on('error', reject);
     });
 };
 
@@ -94,12 +101,12 @@ app.use((req, res, next) => {
 
 const getSong = (props, res, next) => {
     let {artistId, songId} = props.params;
-    const songReq = makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}`);
-    const songsReq = makeRequest(`${API_HOST}/v1/songs`);
-    const geniusReq = makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`);
+    const songReq = apiRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}`);
+    const songsReq = apiRequest(`${API_HOST}/v1/songs`);
+    const geniusReq = apiRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`);
     Promise.all([songReq, songsReq, geniusReq]).then(values => {
         try {
-            const [songRes, songsRes, geniusRes] = values.map(JSON.parse);
+            const [songRes, songsRes, geniusRes] = values;
             const song = songRes.songs[0];
             const songs = songsRes.songs;
             const genius = geniusRes.songs[0].description.plain;
@@ -129,15 +136,14 @@ const getSong = (props, res, next) => {
         } catch (err) {
             next(err);
         }
-    }).catch(err => next(err));
+    }).catch(next);
 };
 
 const getSongs = (props, res, next) => {
-    makeRequest(`${API_HOST}/v1/songs`).then(json => {
+    apiRequest(`${API_HOST}/v1/songs`).then(videos => {
         try {
             const component = <RouterContext {...props} />;
             const rendered = ReactDOMServer.renderToString(component);
-            const videos = JSON.parse(json).songs;
             res.render('index', {
                 title: 'Spool - Just music videos.',
                 description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
@@ -161,26 +167,24 @@ const getSongs = (props, res, next) => {
         } catch (err) {
             next(err);
         }
-    }).catch(err => next(err));
+    }).catch(next);
 };
 
 app.use(express.static(__dirname + '/public'));
 
 app.use((req, res) => {
-    makeRequest(`${API_HOST}/v1/songs`).then(json => {
-        const videos = JSON.parse(json).songs;
+    apiRequest(`${API_HOST}/v1/songs`).then(videos => {
         res.status(404).render('error', {
             title: 'Spool - Not Found',
             heading: 'Not Found',
             videos: videos,
         });
-    });
+    }).catch(next);
 });
 
 app.use((err, req, res, next) => {
     console.error(err);
-    makeRequest(`${API_HOST}/v1/songs`).then(json => {
-        const videos = JSON.parse(json).songs;
+    apiRequest(`${API_HOST}/v1/songs`).then(videos => {
         res.status(500).render('error', {
             title: 'Spool - Server Error',
             heading: 'Server Error',
