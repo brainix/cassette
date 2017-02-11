@@ -127,9 +127,7 @@ const getSong = (props, res, next) => {
         } catch (err) {
             next(err);
         }
-    }).catch(err => {
-        next(err);
-    });
+    }).catch(err => next(err));
 };
 
 const getSongs = (props, res, next) => {
@@ -161,9 +159,7 @@ const getSongs = (props, res, next) => {
         } catch (err) {
             next(err);
         }
-    }).catch(err => {
-        next(err);
-    });
+    }).catch(err => next(err));
 };
 
 app.use(express.static(__dirname + '/public'));
