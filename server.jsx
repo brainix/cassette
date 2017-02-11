@@ -36,7 +36,7 @@ import routes from './shared/routes';
 
 const makeRequest = url => {
     return new Promise((resolve, reject) => {
-        const http = url.startsWith('https') ? require('https') : require('http');
+        const http = require(url.startsWith('https') ? 'https' : 'http');
         const request = http.get(url, response => {
             const body = [];
             response.on('data', chunk => body.push(chunk));
