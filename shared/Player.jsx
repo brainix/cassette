@@ -107,14 +107,11 @@ class Buffer extends React.Component {
                 const {artistId, songId} = this.props;
                 this.serverRequest = $.get(
                     `${this.API}/artists/${artistId}/songs/${songId}`,
-                    (result) => {
+                    result => {
                         this.videos = [result.songs[0]];
                         this.moreVideos(true);
                     }
                 );
-                this.serverRequest.fail(() => {
-                    this.context.router.push('/404');
-                });
             } else {
                 this.moreVideos(true);
             }
@@ -127,7 +124,7 @@ class Buffer extends React.Component {
         }
         this.serverRequest = $.get(
             `${this.API}/songs`,
-            (result) => {
+            result => {
                 this.videos = this.videos.concat(result.songs);
                 if (init) {
                     this.setState({index: 0});

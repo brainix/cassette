@@ -124,7 +124,7 @@ class Precache extends React.PureComponent {
     getQueries() {
         this.serverRequest = $.get(
             `${this.API}/queries`,
-            (result) => this.cacheQueries(result.queries),
+            result => this.cacheQueries(result.queries),
         );
     }
 
@@ -200,81 +200,19 @@ class Input extends React.PureComponent {
 
     onChange(eventObject) {
         const query = eventObject.target.value;
-        const easterEgg = this.easterEgg(query);
         this.props.updateState({query: query});
         if (query) {
             if (this.serverRequest) {
                 this.serverRequest.abort();
             }
-            if (easterEgg === null) {
-                this.serverRequest = $.get(
-                    `${this.API}/songs/search`,
-                    {q: query},
-                    (result) => this.props.updateState({results: result.songs}),
-                )
-                    .always(() => $.post(`${this.API}/queries`, {q: query}));
-            } else {
-                this.props.updateState({results: easterEgg});
-            }
+            this.serverRequest = $.get(
+                `${this.API}/songs/search`,
+                {q: query},
+                result => this.props.updateState({results: result.songs}),
+            )
+                .always(() => $.post(`${this.API}/queries`, {q: query}));
         } else {
             this.props.updateState({results: []});
-        }
-    }
-
-    easterEgg(query) {
-        switch (query.toLowerCase().trimAll()) {
-            case 'raj':
-                return [
-                    {
-                        "_id": 1554,
-                        "album_id": null,
-                        "artist": "Weezer",
-                        "artist_id": "weezer",
-                        "artwork_url": "http://is5.mzstatic.com/image/thumb/Video/d7/7f/67/mzi.bfhabttq.jpg/133x100bb-85.jpg",
-                        "genre": "Rock",
-                        "genre_id": "rock",
-                        "itunes_artist_url": "https://itunes.apple.com/us/artist/weezer/id115234?uo=2",
-                        "itunes_genre_url": "https://itunes.apple.com/us/genre/music-videos-rock/id1621?uo=2",
-                        "itunes_song_url": "https://itunes.apple.com/us/music-video/buddy-holly/id272450585?uo=2",
-                        "mp4_url": "http://a477.phobos.apple.com/us/r1000/044/Video/f6/f9/64/mzm.njrbodrr..640x464.h264lc.u.p.m4v",
-                        "song": "Buddy Holly",
-                        "song_id": "buddy-holly",
-                    },
-                    {
-                        "_id": 1685,
-                        "album": "The Videos",
-                        "album_id": "the-videos",
-                        "artist": "Red Hot Chili Peppers",
-                        "artist_id": "red-hot-chili-peppers",
-                        "artwork_url": "http://is1.mzstatic.com/image/thumb/Video/ca/b8/5c/dj.qbavkfso.jpg/133x100bb-85.jpg",
-                        "genre": "Alternative",
-                        "genre_id": "alternative",
-                        "itunes_album_url": "https://itunes.apple.com/us/album/the-videos/id142229949?uo=2",
-                        "itunes_artist_url": "https://itunes.apple.com/us/artist/red-hot-chili-peppers/id889780?uo=2",
-                        "itunes_genre_url": "https://itunes.apple.com/us/genre/music-videos-alternative/id1620?uo=2",
-                        "itunes_song_url": "https://itunes.apple.com/us/music-video/scar-tissue/id142229976?uo=2",
-                        "mp4_url": "http://a969.phobos.apple.com/us/r1000/003/Video/fb/83/98/mzm.gnztiswm..640x400.h264lc.u.p.m4v",
-                        "song": "Scar Tissue",
-                        "song_id": "scar-tissue",
-                    },
-                    {
-                        "_id": 840,
-                        "album_id": null,
-                        "artist": "Fountains Of Wayne",
-                        "artist_id": "fountains-of-wayne",
-                        "artwork_url": "http://is2.mzstatic.com/image/thumb/Features/ee/3c/f1/dj.kueyrkjp.tif/133x100bb-85.jpg",
-                        "genre": "Alternative",
-                        "genre_id": "alternative",
-                        "itunes_artist_url": "https://itunes.apple.com/us/artist/fountains-of-wayne/id154213?uo=2",
-                        "itunes_genre_url": "https://itunes.apple.com/us/genre/music-videos-alternative/id1620?uo=2",
-                        "itunes_song_url": "https://itunes.apple.com/us/music-video/stacys-mom/id720080360?uo=2",
-                        "mp4_url": "http://a1589.phobos.apple.com/us/r30/Video7/v4/3b/78/40/3b784070-23e5-335c-a535-85adf912b3b4/mzvf_4653304549299309499.640x480.h264lc.U.p.m4v",
-                        "song": "Stacy's Mom",
-                        "song_id": "stacys-mom",
-                    },
-                ];
-            default:
-                return null;
         }
     }
 
