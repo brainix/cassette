@@ -172,7 +172,7 @@ const getSongs = (props, res, next) => {
 
 app.use(express.static(__dirname + '/public'));
 
-app.use((req, res) => {
+app.use((req, res, next) => {
     apiRequest(`${API_HOST}/v1/songs`).then(videos => {
         res.status(404).render('error', {
             title: 'Spool - Not Found',
