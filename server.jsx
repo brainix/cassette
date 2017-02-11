@@ -34,19 +34,15 @@ import routes from './shared/routes';
 
 
 
-const makeRequest = (url) => {
+const makeRequest = url => {
     return new Promise((resolve, reject) => {
         const http = url.startsWith('https') ? require('https') : require('http');
-        const request = http.get(url, (response) => {
+        const request = http.get(url, response => {
             const body = [];
-            response.on('data', (chunk) => {
-                body.push(chunk);
-            });
-            response.on('end', () => {
-                resolve(body.join(''));
-            });
+            response.on('data', chunk => body.push(chunk));
+            response.on('end', () => resolve(body.join('')));
         });
-        request.on('error', (err) => reject(err));
+        request.on('error', err => reject(err));
     });
 };
 
