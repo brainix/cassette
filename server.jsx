@@ -34,21 +34,13 @@ import routes from './shared/routes';
 
 
 
-const apiRequest = url => {
+const makeRequest = url => {
     return new Promise((resolve, reject) => {
         const http = require(url.startsWith('https') ? 'https' : 'http');
         http.get(url, response => {
             const chunks = [];
             response.on('data', chunk => chunks.push(chunk));
-            response.on('end', () => {
-                try {
-                    const json = chunks.join('');
-                    const obj = JSON.parse(json);
-                    resolve(obj);
-                } catch (err) {
-                    reject(err);
-                }
-            });
+            response.on('end', () => resolve(chunks.join('')));
         }).on('error', reject);
     });
 };
@@ -97,12 +89,12 @@ app.use((req, res, next) => {
 
 const getSong = (props, res, next) => {
     let {artistId, songId} = props.params;
-    const songReq = apiRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}`);
-    const songsReq = apiRequest(`${API_HOST}/v1/songs`);
-    const geniusReq = apiRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`);
+    const songReq = makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}`);
+    const songsReq = makeRequest(`${API_HOST}/v1/songs`);
+    const geniusReq = makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`);
     Promise.all([songReq, songsReq, geniusReq]).then(values => {
         try {
-            const [songRes, songsRes, geniusRes] = values;
+            const [songRes, songsRes, geniusRes] = values.map(JSON.parse);
             const song = songRes.songs[0];
             const songs = songsRes.songs;
             const genius = geniusRes.songs[0].description.plain;
@@ -136,8 +128,9 @@ const getSong = (props, res, next) => {
 };
 
 const getSongs = (props, res, next) => {
-    apiRequest(`${API_HOST}/v1/songs`).then(videos => {
+    makeRequest(`${API_HOST}/v1/songs`).then(json => {
         try {
+            const videos = JSON.parse(json).songs;
             const component = <RouterContext {...props} />;
             const rendered = ReactDOMServer.renderToString(component);
             res.render('index', {
@@ -166,10 +159,29 @@ const getSongs = (props, res, next) => {
     }).catch(next);
 };
 
+app.get(['/robots.txt', '/humans.txt'], (req, res, next) => {
+    makeRequest(`${API_HOST}${req.path}`)
+        .then(body => res.type('text/plain').send(body))
+        .catch(next);
+});
+
+app.get('/sitemap.xml', (req, res, next) => {
+    makeRequest(`${API_HOST}/sitemap.xml`).then(body => {
+        const find = process.env.NODE_ENV == 'production' ? /https:\/\/api.spool.tv\//g : /http:\/\/localhost:5000\//g;
+        const replace = process.env.NODE_ENV == 'production' ? 'https://spool.tv/' : 'http://localhost:8080/';
+        body = body.replace(find, replace)
+            .replace(/\/v1\//g, '/')
+            .replace(/\/artists\//g, '/')
+            .replace(/\/songs\//g, '/');
+        res.type('application/xml').send(body);
+    }).catch(next);
+});
+
 app.use(express.static(__dirname + '/public'));
 
 app.use((req, res, next) => {
-    apiRequest(`${API_HOST}/v1/songs`).then(videos => {
+    makeRequest(`${API_HOST}/v1/songs`).then(json => {
+        const videos = JSON.parse(json).songs;
         res.status(404).render('error', {
             title: 'Spool - Not Found',
             heading: 'Not Found',
@@ -180,7 +192,8 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
     console.error(err);
-    apiRequest(`${API_HOST}/v1/songs`).then(videos => {
+    makeRequest(`${API_HOST}/v1/songs`).then(json => {
+        const videos = JSON.parse(json).songs;
         res.status(500).render('error', {
             title: 'Spool - Server Error',
             heading: 'Server Error',
