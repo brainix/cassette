@@ -90,11 +90,7 @@ app.use((req, res, next) => {
             res.redirect(302, redirect.pathname + redirect.search);
         } else {
             let {artistId, songId} = props.params;
-            if (artistId && songId) {
-                getSong(props, res, next);
-            } else {
-                getSongs(props, res, next);
-            }
+            (artistId && songId ? getSong : getSongs)(props, res, next);
         }
     });
 });
