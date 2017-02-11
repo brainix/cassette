@@ -99,8 +99,8 @@ const getSong = (props, res, next) => {
     const geniusRequest = makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`);
     Promise.all([songRequest, songsRequest, geniusRequest]).then(values => {
         try {
-            let [songResponse, songsResponse, geniusResponse] = values.map(JSON.parse);
-            let [song, songs, genius] = [songResponse.songs[0], songsResponse.songs, geniusResponse.songs[0].description.plain];
+            const [songResponse, songsResponse, geniusResponse] = values.map(JSON.parse);
+            const [song, songs, genius] = [songResponse.songs[0], songsResponse.songs, geniusResponse.songs[0].description.plain];
             const component = <RouterContext {...props} />;
             const rendered = ReactDOMServer.renderToString(component);
             const videos = [song].concat(songs);
