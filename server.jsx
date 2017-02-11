@@ -20,9 +20,6 @@
 
 
 
-import http from 'http';
-import https from 'https';
-
 import express from 'express';
 import compression from 'compression';
 import webpack from 'webpack';
@@ -38,13 +35,29 @@ import routes from './shared/routes';
 
 
 
+const makeRequest = (url) => {
+    return new Promise((resolve, reject) => {
+        const http = url.startsWith('https') ? require('https') : require('http');
+        const request = http.get(url, (response) => {
+            const body = [];
+            response.on('data', (chunk) => {
+                body.push(chunk);
+            });
+            response.on('end', () => {
+                resolve(body.join(''));
+            });
+        });
+        request.on('error', (err) => reject(err));
+    });
+};
+
+
+
 const app = express();
-let agent, API_HOST, WEB_HOST;
+let API_HOST, WEB_HOST;
 if (process.env.NODE_ENV === 'production') {
-    agent = https;
     [API_HOST, WEB_HOST] = ['https://api.spool.tv', 'https://spool.tv'];
 } else {
-    agent = http;
     [API_HOST, WEB_HOST] = ['http://localhost:5000', 'http://localhost:8080'];
 }
 
@@ -79,45 +92,27 @@ app.use((req, res, next) => {
                 parallel({
                     song: (callback) => {
                         const url = `${API_HOST}/v1/artists/${artistId}/songs/${songId}`;
-                        agent.get(url, (apiResponse) => {
-                            let json = '';
-                            apiResponse.on('data', (chunk) => {
-                                json += chunk;
-                            });
-                            apiResponse.on('end', () => {
-                                const video = JSON.parse(json).songs[0];
-                                callback(null, video);
-                            });
+                        makeRequest(url).then((json) => {
+                            const video = JSON.parse(json).songs[0];
+                            callback(null, video);
                         });
                     },
                     songs: (callback) => {
                         const url = `${API_HOST}/v1/songs`;
-                        agent.get(url, (apiResponse) => {
-                            let json = '';
-                            apiResponse.on('data', (chunk) => {
-                                json += chunk;
-                            });
-                            apiResponse.on('end', () => {
-                                const videos = JSON.parse(json).songs;
-                                callback(null, videos);
-                            });
+                        makeRequest(url).then((json) => {
+                            const videos = JSON.parse(json).songs;
+                            callback(null, videos);
                         });
                     },
                     genius: (callback) => {
                         const url = `${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`;
-                        agent.get(url, (apiResponse) => {
-                            let json = '';
-                            apiResponse.on('data', (chunk) => {
-                                json += chunk;
-                            });
-                            apiResponse.on('end', () => {
-                                try {
-                                    const description = JSON.parse(json).songs[0].description.plain;
-                                    callback(null, description);
-                                } catch (err) {
-                                    callback(null, '');
-                                }
-                            });
+                        makeRequest(url).then((json) => {
+                            try {
+                                const description = JSON.parse(json).songs[0].description.plain;
+                                callback(null, description);
+                            } catch (err) {
+                                callback(null, '');
+                            }
                         });
                     },
                 },
@@ -151,35 +146,29 @@ app.use((req, res, next) => {
                     }
                 });
             } else {
-                agent.get(`${API_HOST}/v1/songs`, (apiResponse) => {
-                    let json = '';
-                    apiResponse.on('data', (chunk) => {
-                        json += chunk;
-                    });
-                    apiResponse.on('end', () => {
-                        const component = <RouterContext {...props} />;
-                        const rendered = ReactDOMServer.renderToString(component);
-                        const videos = JSON.parse(json).songs;
-                        res.render('index', {
+                makeRequest(`${API_HOST}/v1/songs`).then((json) => {
+                    const component = <RouterContext {...props} />;
+                    const rendered = ReactDOMServer.renderToString(component);
+                    const videos = JSON.parse(json).songs;
+                    res.render('index', {
+                        title: 'Spool - Just music videos.',
+                        description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
+                        openGraph: {
+                            title: 'Spool - Just music videos.',
+                            type: 'website',
+                            image: `${WEB_HOST}/avatar.png`,
+                            url: `${WEB_HOST}/`,
+                            description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
+                            siteName: 'Spool',
+                            video: null,
+                        },
+                        twitterCard: {
                             title: 'Spool - Just music videos.',
                             description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
-                            openGraph: {
-                                title: 'Spool - Just music videos.',
-                                type: 'website',
-                                image: `${WEB_HOST}/avatar.png`,
-                                url: `${WEB_HOST}/`,
-                                description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
-                                siteName: 'Spool',
-                                video: null,
-                            },
-                            twitterCard: {
-                                title: 'Spool - Just music videos.',
-                                description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
-                                image: `${WEB_HOST}/avatar.png`,
-                            },
-                            app: rendered,
-                            videos: videos,
-                        });
+                            image: `${WEB_HOST}/avatar.png`,
+                        },
+                        app: rendered,
+                        videos: videos,
                     });
                 });
             }
@@ -190,36 +179,24 @@ app.use((req, res, next) => {
 app.use(express.static(__dirname + '/public'));
 
 app.use((req, res) => {
-    agent.get(`${API_HOST}/v1/songs`, (apiResponse) => {
-        let json = '';
-        apiResponse.on('data', (chunk) => {
-            json += chunk;
-        });
-        apiResponse.on('end', () => {
-            const videos = JSON.parse(json).songs;
-            res.status(404).render('error', {
-                title: 'Spool - Not Found',
-                heading: 'Not Found',
-                videos: videos,
-            });
+    makeRequest(`${API_HOST}/v1/songs`).then((json) => {
+        const videos = JSON.parse(json).songs;
+        res.status(404).render('error', {
+            title: 'Spool - Not Found',
+            heading: 'Not Found',
+            videos: videos,
         });
     });
 });
 
 app.use((err, req, res, next) => {
     console.error(err);
-    agent.get(`${API_HOST}/v1/songs`, (apiResponse) => {
-        let json = '';
-        apiResponse.on('data', (chunk) => {
-            json += chunk;
-        });
-        apiResponse.on('end', () => {
-            const videos = JSON.parse(json).songs;
-            res.status(500).render('error', {
-                title: 'Spool - Server Error',
-                heading: 'Server Error',
-                videos: videos,
-            });
+    makeRequest(`${API_HOST}/v1/songs`).then((json) => {
+        const videos = JSON.parse(json).songs;
+        res.status(404).render('error', {
+            title: 'Spool - Server Error',
+            heading: 'Server Error',
+            videos: videos,
         });
     });
 });
