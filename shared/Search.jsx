@@ -71,9 +71,6 @@ class Search extends React.PureComponent {
     }
 
     updateState(nextState) {
-        if (console) {
-            console.log(nextState.results);
-        }
         this.setState(nextState);
     }
 
@@ -284,9 +281,6 @@ class Results extends React.PureComponent {
         selected += direction;
         selected += this.props.results.length;
         selected %= this.props.results.length;
-        if (console) {
-            console.log(selected);
-        }
         this.setState({selected: selected});
     }
 
@@ -300,7 +294,7 @@ class Results extends React.PureComponent {
         const items = [];
         for (let index = 0; index < this.props.results.length; index++) {
             const result = this.props.results[index];
-            const key = `/${result.artist_id}/${result.song_id}`;
+            const key = result._id;
             const selected = index === this.state.selected;
             const ref = index === this.state.selected ? 'result' : null;
             const item = (
