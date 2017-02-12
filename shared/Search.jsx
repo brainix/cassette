@@ -281,6 +281,9 @@ class Results extends React.PureComponent {
         selected += direction;
         selected += this.props.results.length;
         selected %= this.props.results.length;
+        if (console) {
+            console.log(selected);
+        }
         this.setState({selected: selected});
     }
 
