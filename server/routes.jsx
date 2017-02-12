@@ -20,6 +20,8 @@
 
 
 
+import fs from 'fs';
+
 import express from 'express';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -38,6 +40,14 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 
+
+const fileContents = (fileName, encoding) => {
+    return new Promise((resolve, reject) => {
+        fs.readFile(fileName, encoding, (err, data) => {
+            (err ? reject : resolve)(err ? err : data);
+        });
+    });
+};
 
 const makeRequest = url => {
     return new Promise((resolve, reject) => {
@@ -62,23 +72,30 @@ router.use((req, res, next) => {
         } else if (redirect) {
             res.redirect(302, redirect.pathname + redirect.search);
         } else {
-            let {artistId, songId} = props.params;
-            (artistId && songId ? getSong : getSongs)(props, res, next);
+            if (props.params.artistId && props.params.songId) {
+                getSpecifiedSongAndRandomSongs(props, res, next);
+            } else {
+                getRandomSongs(props, res, next);
+            }
         }
     });
 });
 
-const getSong = (props, res, next) => {
+const getSpecifiedSongAndRandomSongs = (props, res, next) => {
     let {artistId, songId} = props.params;
-    const songReq = makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}`);
-    const songsReq = makeRequest(`${API_HOST}/v1/songs`);
-    const geniusReq = makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`);
-    Promise.all([songReq, songsReq, geniusReq]).then(values => {
+    const promises = [
+        makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}`),
+        makeRequest(`${API_HOST}/v1/songs`),
+        makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`),
+        fileContents('stats.json'),
+    ]
+    Promise.all(promises).then(values => {
         try {
-            const [songRes, songsRes, geniusRes] = values.map(JSON.parse);
-            const song = songRes.songs[0];
-            const songs = songsRes.songs;
-            const genius = geniusRes.songs[0].description.plain;
+            values = values.map(JSON.parse);
+            const song = values[0].songs[0];
+            const songs = values[1].songs;
+            const genius = values[2].songs[0].description.plain;
+            const hash = values[3].hash;
             const component = <RouterContext {...props} />;
             const rendered = ReactDOMServer.renderToString(component);
             const videos = [song].concat(songs);
@@ -101,6 +118,7 @@ const getSong = (props, res, next) => {
                 },
                 app: rendered,
                 videos: videos,
+                hash: hash,
             });
         } catch (err) {
             next(err);
@@ -108,10 +126,16 @@ const getSong = (props, res, next) => {
     }).catch(next);
 };
 
-const getSongs = (props, res, next) => {
-    makeRequest(`${API_HOST}/v1/songs`).then(json => {
+const getRandomSongs = (props, res, next) => {
+    const promises = [
+        makeRequest(`${API_HOST}/v1/songs`),
+        fileContents('stats.json'),
+    ];
+    Promise.all(promises).then(values => {
         try {
-            const videos = JSON.parse(json).songs;
+            values = values.map(JSON.parse);
+            const videos = values[0].songs;
+            const hash = values[1].hash;
             const component = <RouterContext {...props} />;
             const rendered = ReactDOMServer.renderToString(component);
             res.render('index', {
@@ -133,6 +157,7 @@ const getSongs = (props, res, next) => {
                 },
                 app: rendered,
                 videos: videos,
+                hash: hash,
             });
         } catch (err) {
             next(err);

@@ -39,5 +39,6 @@ jspm_packages
 
 
 # Raj's additions
-public/bundle.js*
-public/style.css*
+public/*.bundle.js
+public/*.style.css
+stats.json

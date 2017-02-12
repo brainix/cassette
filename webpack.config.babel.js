@@ -20,6 +20,7 @@
 
 
 
+import fs from 'fs';
 import path from 'path';
 
 import webpack from 'webpack';
@@ -27,6 +28,7 @@ import ExtractTextPlugin from 'extract-text-webpack-plugin';
 
 const SHARED_DIR = path.resolve(__dirname, 'shared');
 const CLIENT_DIR = path.resolve(__dirname, 'client');
+const SERVER_DIR = path.resolve(__dirname, 'server');
 const BUILD_DIR = path.resolve(__dirname, 'public');
 const NODE_ENV = JSON.stringify(process.env.NODE_ENV || 'development');
 
@@ -41,12 +43,15 @@ module.exports = {
     output: {
         path: BUILD_DIR,
         publicPath: '/',
-        filename: 'bundle.js',
+        filename: '[hash].bundle.js',
     },
     plugins: ((() => {
         const plugins = [
             new webpack.DefinePlugin({'process.env.NODE_ENV': NODE_ENV}),
-            new ExtractTextPlugin({filename: 'style.css', allChunks: true}),
+            new ExtractTextPlugin({
+                filename: '[hash].style.css',
+                allChunks: true,
+            }),
         ];
         if (process.env.NODE_ENV === 'production') {
             plugins.push(new webpack.optimize.UglifyJsPlugin());
@@ -56,6 +61,14 @@ module.exports = {
                 new webpack.NoEmitOnErrorsPlugin(),
             );
         }
+        plugins.push(function() {
+            this.plugin('done', stats => {
+                fs.writeFileSync(
+                    path.join(__dirname, 'stats.json'),
+                    JSON.stringify(stats.toJson()),
+                );
+            });
+        });
         return plugins;
     })()),
     module: {
@@ -70,7 +83,7 @@ module.exports = {
             },
             {
                 test: /\.jsx?$/,
-                include: [SHARED_DIR, CLIENT_DIR],
+                include: [SHARED_DIR, CLIENT_DIR, SERVER_DIR],
                 loader: 'babel-loader',
             },
         ],
