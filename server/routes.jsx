@@ -148,8 +148,14 @@ router.get(['/robots.txt', '/humans.txt'], (req, res, next) => {
 
 router.get('/sitemap.xml', (req, res, next) => {
     makeRequest(`${API_HOST}/sitemap.xml`).then(body => {
-        const find = process.env.NODE_ENV == 'production' ? /https:\/\/api.spool.tv\//g : /http:\/\/localhost:5000\//g;
-        const replace = process.env.NODE_ENV == 'production' ? 'https://spool.tv/' : 'http://localhost:8080/';
+        let find, replace;
+        if (process.env.NODE_ENV === 'production') {
+            find = /https:\/\/api.spool.tv\//g;
+            replace = 'https://spool.tv/';
+        } else {
+            find = /http:\/\/localhost:5000\//g;
+            replace = 'http://localhost:8080/';
+        }
         body = body.replace(find, replace)
             .replace(/\/v1\//g, '/')
             .replace(/\/artists\//g, '/')
