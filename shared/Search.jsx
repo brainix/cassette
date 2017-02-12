@@ -71,6 +71,9 @@ class Search extends React.PureComponent {
     }
 
     updateState(nextState) {
+        if (console) {
+            console.log(nextState.results);
+        }
         this.setState(nextState);
     }
 
