@@ -1,7 +1,11 @@
 {
   "name": "cassette",
-  "version": "1.0.0",
   "description": "Baby's first React app!",
+  "version": "1.0.0",
+  "engines": {
+    "node": "7.5.0",
+    "npm": "4.1.2"
+  },
   "main": "index.js",
   "scripts": {
     "dev": "webpack -d --watch",
