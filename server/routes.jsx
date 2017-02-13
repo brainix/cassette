@@ -89,41 +89,43 @@ const getSpecifiedSongAndRandomSongs = (props, res, next) => {
         makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`),
         fileContents('stats.json'),
     ]
-    Promise.all(promises).then(values => {
-        try {
-            values = values.map(JSON.parse);
-            const song = values[0].songs[0];
-            const songs = values[1].songs;
-            const genius = values[2].songs[0].description.plain;
-            const hash = values[3].hash;
-            const component = <RouterContext {...props} />;
-            const rendered = ReactDOMServer.renderToString(component);
-            const videos = [song].concat(songs);
-            res.render('index', {
-                title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
-                description: genius,
-                openGraph: {
-                    title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
-                    type: 'website',
-                    image: videos[0].artwork_url,
-                    url: `${WEB_HOST}/${artistId}/${songId}`,
-                    description: genius,
-                    siteName: 'Spool',
-                    video: videos[0].mp4_url,
-                },
-                twitterCard: {
+    Promise.all(promises)
+        .then(values => {
+            try {
+                values = values.map(JSON.parse);
+                const song = values[0].songs[0];
+                const songs = values[1].songs;
+                const genius = values[2].songs[0].description.plain;
+                const hash = values[3].hash;
+                const component = <RouterContext {...props} />;
+                const rendered = ReactDOMServer.renderToString(component);
+                const videos = [song].concat(songs);
+                res.render('index', {
                     title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
                     description: genius,
-                    image: videos[0].artwork_url,
-                },
-                app: rendered,
-                videos: videos,
-                hash: hash,
-            });
-        } catch (err) {
-            next(err);
-        }
-    }).catch(next);
+                    openGraph: {
+                        title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
+                        type: 'website',
+                        image: videos[0].artwork_url,
+                        url: `${WEB_HOST}/${artistId}/${songId}`,
+                        description: genius,
+                        siteName: 'Spool',
+                        video: videos[0].mp4_url,
+                    },
+                    twitterCard: {
+                        title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
+                        description: genius,
+                        image: videos[0].artwork_url,
+                    },
+                    app: rendered,
+                    videos: videos,
+                    hash: hash,
+                });
+            } catch (err) {
+                next(err);
+            }
+        })
+        .catch(next);
 };
 
 const getRandomSongs = (props, res, next) => {
@@ -131,38 +133,40 @@ const getRandomSongs = (props, res, next) => {
         makeRequest(`${API_HOST}/v1/songs`),
         fileContents('stats.json'),
     ];
-    Promise.all(promises).then(values => {
-        try {
-            values = values.map(JSON.parse);
-            const videos = values[0].songs;
-            const hash = values[1].hash;
-            const component = <RouterContext {...props} />;
-            const rendered = ReactDOMServer.renderToString(component);
-            res.render('index', {
-                title: 'Spool - Just music videos.',
-                description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
-                openGraph: {
-                    title: 'Spool - Just music videos.',
-                    type: 'website',
-                    image: `${WEB_HOST}/avatar.png`,
-                    url: `${WEB_HOST}/`,
-                    description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
-                    siteName: 'Spool',
-                    video: null,
-                },
-                twitterCard: {
+    Promise.all(promises)
+        .then(values => {
+            try {
+                values = values.map(JSON.parse);
+                const videos = values[0].songs;
+                const hash = values[1].hash;
+                const component = <RouterContext {...props} />;
+                const rendered = ReactDOMServer.renderToString(component);
+                res.render('index', {
                     title: 'Spool - Just music videos.',
                     description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
-                    image: `${WEB_HOST}/avatar.png`,
-                },
-                app: rendered,
-                videos: videos,
-                hash: hash,
-            });
-        } catch (err) {
-            next(err);
-        }
-    }).catch(next);
+                    openGraph: {
+                        title: 'Spool - Just music videos.',
+                        type: 'website',
+                        image: `${WEB_HOST}/avatar.png`,
+                        url: `${WEB_HOST}/`,
+                        description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
+                        siteName: 'Spool',
+                        video: null,
+                    },
+                    twitterCard: {
+                        title: 'Spool - Just music videos.',
+                        description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
+                        image: `${WEB_HOST}/avatar.png`,
+                    },
+                    app: rendered,
+                    videos: videos,
+                    hash: hash,
+                });
+            } catch (err) {
+                next(err);
+            }
+        })
+        .catch(next);
 };
 
 router.get(['/robots.txt', '/humans.txt'], (req, res, next) => {
@@ -172,46 +176,51 @@ router.get(['/robots.txt', '/humans.txt'], (req, res, next) => {
 });
 
 router.get('/sitemap.xml', (req, res, next) => {
-    makeRequest(`${API_HOST}/sitemap.xml`).then(body => {
-        let find, replace;
-        if (process.env.NODE_ENV === 'production') {
-            find = /https:\/\/api.spool.tv\//g;
-            replace = 'https://spool.tv/';
-        } else {
-            find = /http:\/\/localhost:5000\//g;
-            replace = 'http://localhost:8080/';
-        }
-        body = body.replace(find, replace)
-            .replace(/\/v1\//g, '/')
-            .replace(/\/artists\//g, '/')
-            .replace(/\/songs\//g, '/');
-        res.type('application/xml').send(body);
-    }).catch(next);
+    makeRequest(`${API_HOST}/sitemap.xml`)
+        .then(body => {
+            let find, replace;
+            if (process.env.NODE_ENV === 'production') {
+                find = /https:\/\/api.spool.tv\//g;
+                replace = 'https://spool.tv/';
+            } else {
+                find = /http:\/\/localhost:5000\//g;
+                replace = 'http://localhost:8080/';
+            }
+            body = body.replace(find, replace)
+                .replace(/\/v1\//g, '/')
+                .replace(/\/artists\//g, '/')
+                .replace(/\/songs\//g, '/');
+            res.type('application/xml').send(body);
+        })
+        .catch(next);
 });
 
 router.use(express.static(__dirname + '/../public'));
 
 router.use((req, res, next) => {
-    makeRequest(`${API_HOST}/v1/songs`).then(json => {
-        const videos = JSON.parse(json).songs;
-        res.status(404).render('error', {
-            title: 'Spool - Not Found',
-            heading: 'Not Found',
-            videos: videos,
-        });
-    }).catch(next);
+    makeRequest(`${API_HOST}/v1/songs`)
+        .then(json => {
+            const videos = JSON.parse(json).songs;
+            res.status(404).render('error', {
+                title: 'Spool - Not Found',
+                heading: 'Not Found',
+                videos: videos,
+            });
+        })
+        .catch(next);
 });
 
 router.use((err, req, res, next) => {
     console.error(err);
-    makeRequest(`${API_HOST}/v1/songs`).then(json => {
-        const videos = JSON.parse(json).songs;
-        res.status(500).render('error', {
-            title: 'Spool - Server Error',
-            heading: 'Server Error',
-            videos: videos,
+    makeRequest(`${API_HOST}/v1/songs`)
+        .then(json => {
+            const videos = JSON.parse(json).songs;
+            res.status(500).render('error', {
+                title: 'Spool - Server Error',
+                heading: 'Server Error',
+                videos: videos,
+            });
         });
-    });
 });
 
 
