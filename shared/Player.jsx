@@ -184,7 +184,7 @@ Buffer.contextTypes = {router: React.PropTypes.object};
 
 
 
-class Video extends React.Component {
+class Video extends React.PureComponent {
     constructor(props) {
         super(props);
         this.onMouseDown = this.onMouseDown.bind(this);

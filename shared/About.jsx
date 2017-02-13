@@ -28,9 +28,13 @@ import Search from './Search.jsx';
 
 
 
-export default class About extends React.Component {
+export default class About extends React.PureComponent {
     componentDidMount() {
         document.title = 'Spool - About Me';
+    }
+
+    shouldComponentUpdate() {
+        return false;
     }
 
     render() {
