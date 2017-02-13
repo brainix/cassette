@@ -24,7 +24,6 @@ import React from 'react';
 import $ from 'jquery';
 import Link from 'react-router/lib/Link';
 import withRouter from 'react-router/lib/withRouter';
-import {render} from 'react-dom';
 
 
 

@@ -23,7 +23,6 @@
 import React from 'react';
 import $ from 'jquery';
 import browserHistory from 'react-router/lib/browserHistory';
-import {render} from 'react-dom';
 
 
 
