@@ -28,6 +28,7 @@ import ReactDOMServer from 'react-dom/server';
 import {memoryHistory, match, RouterContext} from 'react-router';
 
 import routes from '../shared/routes.jsx';
+import Head from './Head.jsx';
 
 
 
@@ -95,32 +96,23 @@ const getSpecifiedSongAndRandomSongs = (props, res, next) => {
                 values = values.map(JSON.parse);
                 const song = values[0].songs[0];
                 const songs = values[1].songs;
-                const genius = values[2].songs[0].description.plain;
+                const description = values[2].songs[0].description.plain;
                 const hash = values[3].hash;
-                const component = <RouterContext {...props} />;
-                const rendered = ReactDOMServer.renderToString(component);
+                const head = ReactDOMServer.renderToString(
+                    <Head
+                        hash={hash}
+                        title={`Spool - ${song.artist} - ${song.song}`}
+                        description={description}
+                        image={song.artwork_url}
+                        url={`${WEB_HOST}/${artistId}/${songId}`}
+                        video={song.mp4_url}
+                    />
+                );
+                const app = ReactDOMServer.renderToString(
+                    <RouterContext {...props} />
+                );
                 const videos = [song].concat(songs);
-                res.render('index', {
-                    title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
-                    description: genius,
-                    openGraph: {
-                        title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
-                        type: 'website',
-                        image: videos[0].artwork_url,
-                        url: `${WEB_HOST}/${artistId}/${songId}`,
-                        description: genius,
-                        siteName: 'Spool',
-                        video: videos[0].mp4_url,
-                    },
-                    twitterCard: {
-                        title: `Spool - ${videos[0].artist} - ${videos[0].song}`,
-                        description: genius,
-                        image: videos[0].artwork_url,
-                    },
-                    app: rendered,
-                    videos: videos,
-                    hash: hash,
-                });
+                res.render('index', {head, app, videos, hash});
             } catch (err) {
                 next(err);
             }
@@ -139,29 +131,13 @@ const getRandomSongs = (props, res, next) => {
                 values = values.map(JSON.parse);
                 const videos = values[0].songs;
                 const hash = values[1].hash;
-                const component = <RouterContext {...props} />;
-                const rendered = ReactDOMServer.renderToString(component);
-                res.render('index', {
-                    title: 'Spool - Just music videos.',
-                    description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
-                    openGraph: {
-                        title: 'Spool - Just music videos.',
-                        type: 'website',
-                        image: `${WEB_HOST}/avatar.png`,
-                        url: `${WEB_HOST}/`,
-                        description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
-                        siteName: 'Spool',
-                        video: null,
-                    },
-                    twitterCard: {
-                        title: 'Spool - Just music videos.',
-                        description: "Spool takes the experience of channel surfing and puts it online. I hope that you enjoy using it as much as I've enjoyed building it.",
-                        image: `${WEB_HOST}/avatar.png`,
-                    },
-                    app: rendered,
-                    videos: videos,
-                    hash: hash,
-                });
+                const head = ReactDOMServer.renderToString(
+                    <Head hash={hash} />
+                );
+                const app = ReactDOMServer.renderToString(
+                    <RouterContext {...props} />
+                );
+                res.render('index', {head, app, videos, hash});
             } catch (err) {
                 next(err);
             }
@@ -198,28 +174,48 @@ router.get('/sitemap.xml', (req, res, next) => {
 router.use(express.static(__dirname + '/../public'));
 
 router.use((req, res, next) => {
-    makeRequest(`${API_HOST}/v1/songs`)
-        .then(json => {
-            const videos = JSON.parse(json).songs;
-            res.status(404).render('error', {
-                title: 'Spool - Not Found',
-                heading: 'Not Found',
-                videos: videos,
-            });
+    const promises = [
+        makeRequest(`${API_HOST}/v1/songs`),
+        fileContents('stats.json'),
+    ];
+    Promise.all(promises)
+        .then(values => {
+            try {
+                values = values.map(JSON.parse);
+                const videos = values[0].songs;
+                const hash = values[1].hash;
+                const title = 'Spool - Not Found';
+                const description = 'Spool - Not Found';
+                const heading = 'Not Found';
+                const head = ReactDOMServer.renderToString(
+                    <Head hash={hash} title={title} description={description} />
+                );
+                res.status(404).render('error', {head, videos, heading});
+            } catch (err) {
+                next(err);
+            }
         })
         .catch(next);
 });
 
 router.use((err, req, res, next) => {
     console.error(err);
-    makeRequest(`${API_HOST}/v1/songs`)
-        .then(json => {
-            const videos = JSON.parse(json).songs;
-            res.status(500).render('error', {
-                title: 'Spool - Server Error',
-                heading: 'Server Error',
-                videos: videos,
-            });
+    const promises = [
+        makeRequest(`${API_HOST}/v1/songs`),
+        fileContents('stats.json'),
+    ];
+    Promise.all(promises)
+        .then(values => {
+            values = values.map(JSON.parse);
+            const videos = values[0].songs;
+            const hash = values[1].hash;
+            const title = 'Spool - Server Error';
+            const description = 'Spool - Server Error';
+            const heading = 'Server Error';
+            const head = ReactDOMServer.renderToString(
+                <Head hash={hash} title={title} description={description} />
+            );
+            res.status(500).render('error', {head, videos, heading});
         });
 });
 
