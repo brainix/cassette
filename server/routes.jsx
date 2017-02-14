@@ -85,20 +85,20 @@ router.use((req, res, next) => {
 const getSpecifiedSongAndRandomSongs = (props, res, next) => {
     let {artistId, songId} = props.params;
     const promises = [
+        fileContents('stats.json'),
         makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}`),
         makeRequest(`${API_HOST}/v1/songs`),
         makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`),
-        fileContents('stats.json'),
-    ]
+    ];
     Promise.all(promises)
         .then(values => {
             try {
                 values = values.map(JSON.parse);
-                const song = values[0].songs[0];
-                const songs = values[1].songs;
-                const description = values[2].songs[0].description.plain;
-                const hash = values[3].hash;
-                const head = ReactDOMServer.renderToString(
+                const hash = values[0].hash;
+                const song = values[1].songs[0];
+                const songs = values[2].songs;
+                const description = values[3].songs[0].description.plain;
+                const [head, app] = [
                     <Head
                         hash={hash}
                         title={`Spool - ${song.artist} - ${song.song}`}
@@ -106,11 +106,9 @@ const getSpecifiedSongAndRandomSongs = (props, res, next) => {
                         image={song.artwork_url}
                         url={`${WEB_HOST}/${artistId}/${songId}`}
                         video={song.mp4_url}
-                    />
-                );
-                const app = ReactDOMServer.renderToString(
-                    <RouterContext {...props} />
-                );
+                    />,
+                    <RouterContext {...props} />,
+                ].map(ReactDOMServer.renderToString);
                 const videos = [song].concat(songs);
                 res.render('index', {head, app, videos, hash});
             } catch (err) {
@@ -122,21 +120,19 @@ const getSpecifiedSongAndRandomSongs = (props, res, next) => {
 
 const getRandomSongs = (props, res, next) => {
     const promises = [
-        makeRequest(`${API_HOST}/v1/songs`),
         fileContents('stats.json'),
+        makeRequest(`${API_HOST}/v1/songs`),
     ];
     Promise.all(promises)
         .then(values => {
             try {
                 values = values.map(JSON.parse);
-                const videos = values[0].songs;
-                const hash = values[1].hash;
-                const head = ReactDOMServer.renderToString(
-                    <Head hash={hash} />
-                );
-                const app = ReactDOMServer.renderToString(
-                    <RouterContext {...props} />
-                );
+                const hash = values[0].hash;
+                const videos = values[1].songs;
+                const [head, app] = [
+                    <Head hash={hash} />,
+                    <RouterContext {...props} />,
+                ].map(ReactDOMServer.renderToString);
                 res.render('index', {head, app, videos, hash});
             } catch (err) {
                 next(err);
@@ -175,15 +171,15 @@ router.use(express.static(__dirname + '/../public'));
 
 router.use((req, res, next) => {
     const promises = [
-        makeRequest(`${API_HOST}/v1/songs`),
         fileContents('stats.json'),
+        makeRequest(`${API_HOST}/v1/songs`),
     ];
     Promise.all(promises)
         .then(values => {
             try {
                 values = values.map(JSON.parse);
-                const videos = values[0].songs;
-                const hash = values[1].hash;
+                const hash = values[0].hash;
+                const videos = values[1].songs;
                 const title = 'Spool - Not Found';
                 const description = 'Spool - Not Found';
                 const heading = 'Not Found';
@@ -201,14 +197,14 @@ router.use((req, res, next) => {
 router.use((err, req, res, next) => {
     console.error(err);
     const promises = [
-        makeRequest(`${API_HOST}/v1/songs`),
         fileContents('stats.json'),
+        makeRequest(`${API_HOST}/v1/songs`),
     ];
     Promise.all(promises)
         .then(values => {
             values = values.map(JSON.parse);
-            const videos = values[0].songs;
-            const hash = values[1].hash;
+            const hash = values[0].hash;
+            const videos = values[1].songs;
             const title = 'Spool - Server Error';
             const description = 'Spool - Server Error';
             const heading = 'Server Error';
