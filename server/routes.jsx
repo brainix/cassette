@@ -83,7 +83,7 @@ router.use((req, res, next) => {
 });
 
 const getSpecifiedSongAndRandomSongs = (props, res, next) => {
-    let {artistId, songId} = props.params;
+    const {artistId, songId} = props.params;
     const promises = [
         fileContents('stats.json'),
         makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}`),
