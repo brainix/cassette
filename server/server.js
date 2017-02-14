@@ -27,7 +27,7 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 
 import config from '../webpack.config.babel';
-import router from './routes.jsx';
+import router from './router.jsx';
 
 
 

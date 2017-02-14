@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
- |  routes.jsx                                                               |
+ |  router.jsx                                                               |
  |                                                                           |
  |  Copyright © 2016-2017, Rajiv Bakulesh Shah, original author.             |
  |                                                                           |
