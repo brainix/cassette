@@ -8,9 +8,9 @@
   },
   "main": "index.js",
   "scripts": {
-    "dev": "webpack -d --watch",
+    "dev": "babel-watch server/server.js; make clean",
     "postinstall": "webpack -p --progress --colors",
-    "start": "if [[ $NODE_ENV = 'production' ]]; then babel-node server/server.js; else babel-watch server/server.js; fi",
+    "start": "babel-node server/server.js; make clean",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
