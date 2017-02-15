@@ -20,7 +20,7 @@
 
 
 
-import React from 'react';
+import React from 'react/lib/React';
 import Link from 'react-router/lib/Link';
 
 

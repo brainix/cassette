@@ -20,7 +20,7 @@
 
 
 
-import React from 'react';
+import React from 'react/lib/React';
 import $ from 'jquery';
 import browserHistory from 'react-router/lib/browserHistory';
 

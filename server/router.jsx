@@ -22,8 +22,8 @@
 
 import fs from 'fs';
 
-import express from 'express';
-import React from 'react';
+import express from 'express/lib/express';
+import React from 'react/lib/React';
 import ReactDOMServer from 'react-dom/server';
 import {memoryHistory, match, RouterContext} from 'react-router';
 

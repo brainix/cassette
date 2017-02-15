@@ -20,7 +20,7 @@
 
 
 
-import React from 'react';
+import React from 'react/lib/React';
 import Router from 'react-router/lib/Router';
 import useRouterHistory from 'react-router/lib/useRouterHistory';
 import {render} from 'react-dom';

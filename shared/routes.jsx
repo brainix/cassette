@@ -20,7 +20,7 @@
 
 
 
-import React from 'react';
+import React from 'react/lib/React';
 import Route from 'react-router/lib/Route';
 import IndexRoute from 'react-router/lib/IndexRoute';
 

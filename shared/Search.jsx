@@ -20,7 +20,7 @@
 
 
 
-import React from 'react';
+import React from 'react/lib/React';
 import $ from 'jquery';
 import Link from 'react-router/lib/Link';
 import withRouter from 'react-router/lib/withRouter';
