@@ -95,21 +95,21 @@ const getSpecifiedSongAndRandomSongs = (props, res, next) => {
             try {
                 values = values.map(JSON.parse);
                 const hash = values[0].hash;
-                const song = values[1].songs[0];
-                const songs = values[2].songs;
+                const specifiedSong = values[1].songs[0];
+                const randomSongs = values[2].songs;
                 const description = values[3].songs[0].description.plain;
                 const [head, app] = [
                     <Head
                         hash={hash}
-                        title={`Spool - ${song.artist} - ${song.song}`}
+                        title={`Spool - ${specifiedSong.artist} - ${specifiedSong.song}`}
                         description={description}
-                        image={song.artwork_url}
+                        image={specifiedSong.artwork_url}
                         url={`${WEB_HOST}/${artistId}/${songId}`}
-                        video={song.mp4_url}
+                        video={specifiedSong.mp4_url}
                     />,
                     <RouterContext {...props} />,
                 ].map(ReactDOMServer.renderToString);
-                const videos = [song].concat(songs);
+                const videos = [specifiedSong].concat(randomSongs);
                 res.render('index', {head, app, videos, hash});
             } catch (err) {
                 next(err);
