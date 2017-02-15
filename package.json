@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "webpack -d --watch",
     "postinstall": "webpack -p --progress --colors",
-    "start": "babel-watch server/server.js && make clean",
+    "start": "[[ $NODE_ENV = 'production' ]] && babel-node server/server.js || babel-watch server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
