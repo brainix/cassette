@@ -20,6 +20,8 @@
 
 
 
+import cluster from 'cluster';
+
 import express from 'express';
 import compression from 'compression';
 import webpack from 'webpack';
@@ -31,9 +33,9 @@ import router from './router.jsx';
 
 
 
+const PORT = process.env.PORT || 8080;
+const NUM_WORKERS = process.env.WEB_CONCURRENCY || 1;
 const app = express();
-
-
 
 if (process.env.NODE_ENV === 'production') {
     app.use(compression());
@@ -48,9 +50,23 @@ if (process.env.NODE_ENV === 'production') {
 app.set('view engine', 'pug');
 app.use(router);
 
+const runInstance = () => {
+    app.listen(PORT, () => {
+        console.log(`Listening at: http://127.0.0.1:${PORT} (${process.pid})`);
+    });
+};
 
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log(`Listening at: http://127.0.0.1:${PORT} (${process.pid})`);
-});
+
+if (process.env.NODE_ENV === 'production') {
+    if (cluster.isMaster) {
+        for (var i = 0; i < NUM_WORKERS; i++) {
+            cluster.fork();
+        }
+        cluster.on('exit', () => cluster.fork());
+    } else if (cluster.isWorker) {
+        runInstance();
+    }
+} else {
+    runInstance();
+}
