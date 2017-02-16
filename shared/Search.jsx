@@ -40,14 +40,6 @@ String.prototype.htmlToText = function () {
     return s;
 }
 
-Array.prototype.choice = function () {
-    return this[Math.floor(Math.random() * this.length)];
-};
-
-Array.prototype.shuffle = function() {
-    return this.sort((a, b) => [-1, 0, 1].choice());
-};
-
 
 
 class Search extends React.PureComponent {

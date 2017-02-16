@@ -45,16 +45,6 @@ if (process.env.NODE_ENV === 'production') {
 
 
 
-Array.prototype.choice = function () {
-    return this[Math.floor(Math.random() * this.length)];
-};
-
-Array.prototype.shuffle = function() {
-    return this.sort(() => [-1, 0, 1].choice());
-};
-
-
-
 const fileContents = (fileName, encoding) => {
     return new Promise((resolve, reject) => {
         fs.readFile(fileName, encoding, (err, data) => {
@@ -101,11 +91,11 @@ const getRandomSongs = () => {
                 .then(value => {
                     randomSongs = JSON.parse(value).songs;
                     cache.set('random', randomSongs, 30 * 1000);
-                    resolve(randomSongs.shuffle());
+                    resolve(randomSongs);
                 })
                 .catch(err => reject(err));
         } else {
-            resolve(randomSongs.shuffle());
+            resolve(randomSongs);
         }
     });
 };

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
- |  Home.jsx                                                                 |
+ |  monkey.js                                                                |
  |                                                                           |
  |  Copyright © 2016-2017, Rajiv Bakulesh Shah, original author.             |
  |                                                                           |
@@ -20,40 +20,10 @@
 
 
 
-import React from 'react/lib/React';
+Array.prototype.choice = function () {
+    return this[Math.floor(Math.random() * this.length)];
+};
 
-import './monkey';
-import Player from './Player.jsx';
-import Search from './Search.jsx';
-
-
-
-export default class Home extends React.Component {
-    constructor(props) {
-        super(props);
-        this.resetSearch = this.resetSearch.bind(this);
-        this.state = {
-            query: this.props.query || '',
-            results: this.props.results || [],
-        };
-    }
-
-    resetSearch() {
-        this.setState({query: '', results: []});
-    }
-
-    render() {
-        return (
-            <div>
-                <Player
-                    state='playing'
-                    artistId={this.props.params.artistId}
-                    songId={this.props.params.songId}
-                    resetSearch={this.resetSearch}
-                    videos={(this.props.videos || this.props.route.videos || []).shuffle()}
-                />
-                <Search query={this.state.query} results={this.state.results} />
-            </div>
-        );
-    }
-}
+Array.prototype.shuffle = function () {
+    return this.sort(() => [-1, 0, 1].choice());
+};
