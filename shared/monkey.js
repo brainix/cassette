@@ -20,10 +20,27 @@
 
 
 
+String.prototype.trimAll = function () {
+    return this.trim()
+        .replace(/\s+/g, ' ');
+};
+
+String.prototype.htmlToText = function () {
+    return this.replace(/<[^>]*\/?>/g, '')      // HTML open and self-closing tags
+        .replace(/<\/[a-z]*>/ig, '')            // HTML close tags
+        .replace(/\&mdash;/ig, '-');
+}
+
+
+
 Array.prototype.choice = function () {
     return this[Math.floor(Math.random() * this.length)];
 };
 
-Array.prototype.shuffle = function () {
-    return this.sort(() => [-1, 0, 1].choice());
+Array.prototype.shuffle = function() {
+    for (let current = this.length; current > 0; current--) {
+        let random = Math.floor(Math.random() * current);
+        [this[current], this[random]] = [this[random], this[current]];
+    }
+    return this;
 };

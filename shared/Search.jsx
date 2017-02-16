@@ -25,20 +25,7 @@ import $ from 'jquery';
 import Link from 'react-router/lib/Link';
 import withRouter from 'react-router/lib/withRouter';
 
-
-
-String.prototype.trimAll = function () {
-    const s = this.trim();
-    s.replace(/\s+/g, ' ');
-    return s;
-};
-
-String.prototype.htmlToText = function () {
-    const s = this.replace(/<[^>]*\/?>/g, '')   // HTML open and self-closing tags
-        .replace(/<\/[a-z]*>/ig, '')            // HTML close tags
-        .replace(/\&mdash;/ig, '-');
-    return s;
-}
+import './monkey';
 
 
 
