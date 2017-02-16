@@ -149,6 +149,8 @@ const renderRandomSongs = (props, res, next) => {
                     <Head bundleHash={bundleHash} />,
                     <RouterContext {...props} />,
                 ].map(ReactDOMServer.renderToString);
+                res.setHeader('Cache-Control', 'public, max-age=30');
+                res.setHeader('Expires', new Date(Date.now() + 30 * 1000).toUTCString());
                 res.render('index', {head, app, videos, bundleHash});
             } catch (err) {
                 next(err);
@@ -184,6 +186,8 @@ const renderSpecifiedSongAndRandomSongs = (props, res, next) => {
                     <RouterContext {...props} />,
                 ].map(ReactDOMServer.renderToString);
                 const videos = [specifiedSong].concat(randomSongs);
+                res.setHeader('Cache-Control', 'public, max-age=30');
+                res.setHeader('Expires', new Date(Date.now() + 30 * 1000).toUTCString());
                 res.render('index', {head, app, videos, bundleHash});
             } catch (err) {
                 next(err);
@@ -215,7 +219,11 @@ router.use((req, res, next) => {
 
 router.get(['/robots.txt', '/humans.txt'], (req, res, next) => {
     makeRequest(`${API_HOST}${req.path}`)
-        .then(body => res.type('text/plain').send(body))
+        .then(body => {
+            res.setHeader('Cache-Control', `public, max-age=${24 * 60 * 60}`);
+            res.setHeader('Expires', new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString());
+            res.type('text/plain').send(body);
+        })
         .catch(next);
 });
 
@@ -234,12 +242,17 @@ router.get('/sitemap.xml', (req, res, next) => {
                 .replace(/\/v1\//g, '/')
                 .replace(/\/artists\//g, '/')
                 .replace(/\/songs\//g, '/');
+            res.setHeader('Cache-Control', `public, max-age=${24 * 60 * 60}`);
+            res.setHeader('Expires', new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString());
             res.type('application/xml').send(body);
         })
         .catch(next);
 });
 
-router.use(express.static(__dirname + '/../public'));
+router.use(express.static(__dirname + '/../public', {
+    maxAge: 24 * 60 * 60 * 1000,
+    setHeaders: res => res.setHeader('Expires', new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString()),
+}));
 
 router.use((req, res, next) => {
     const promises = [getBundleHash(), getRandomSongs()];
