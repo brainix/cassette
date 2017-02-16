@@ -50,7 +50,7 @@ Array.prototype.choice = function () {
 };
 
 Array.prototype.shuffle = function() {
-    return this.sort((a, b) => [-1, 0, 1].choice());
+    return this.sort(() => [-1, 0, 1].choice());
 };
 
 
