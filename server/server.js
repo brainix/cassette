@@ -22,6 +22,7 @@
 
 import cluster from 'cluster';
 
+import 'newrelic';
 import express from 'express/lib/express';
 import compression from 'compression';
 import webpack from 'webpack/lib/webpack';
