@@ -26,6 +26,7 @@ import express from 'express/lib/express';
 import React from 'react/lib/React';
 import ReactDOMServer from 'react-dom/server';
 import {memoryHistory, match, RouterContext} from 'react-router';
+import LRUCache from 'lru-cache/lib/lru-cache';
 
 import routes from '../shared/routes.jsx';
 import Head from './Head.jsx';
@@ -33,12 +34,24 @@ import Head from './Head.jsx';
 
 
 const router = express.Router();
+const cache = LRUCache({max: 128});
+
 let API_HOST, WEB_HOST;
 if (process.env.NODE_ENV === 'production') {
     [API_HOST, WEB_HOST] = ['https://api.spool.tv', 'https://spool.tv'];
 } else {
     [API_HOST, WEB_HOST] = ['http://localhost:5000', 'http://localhost:8080'];
 }
+
+
+
+Array.prototype.choice = function () {
+    return this[Math.floor(Math.random() * this.length)];
+};
+
+Array.prototype.shuffle = function() {
+    return this.sort((a, b) => [-1, 0, 1].choice());
+};
 
 
 
@@ -63,6 +76,80 @@ const makeRequest = url => {
 
 
 
+const getBundleHash = () => {
+    return new Promise((resolve, reject) => {
+        let bundleHash = cache.get('hash');
+        if (bundleHash === undefined) {
+            fileContents('stats.json')
+                .then(value => {
+                    bundleHash = JSON.parse(value).hash;
+                    cache.set('hash', bundleHash);
+                    resolve(bundleHash);
+                })
+                .catch(err => reject(err));
+        } else {
+            resolve(bundleHash);
+        }
+    });
+};
+
+const getRandomSongs = () => {
+    return new Promise((resolve, reject) => {
+        let randomSongs = cache.get('random');
+        if (randomSongs === undefined) {
+            makeRequest(`${API_HOST}/v1/songs`)
+                .then(value => {
+                    randomSongs = JSON.parse(value).songs;
+                    cache.set('random', randomSongs, 30 * 1000);
+                    resolve(randomSongs.shuffle());
+                })
+                .catch(err => reject(err));
+        } else {
+            resolve(randomSongs.shuffle());
+        }
+    });
+};
+
+const getSpecifiedSong = (artistId, songId) => {
+    return new Promise((resolve, reject) => {
+        let specifiedSong = cache.get(`${artistId}/${songId}`);
+        if (specifiedSong === undefined) {
+            makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}`)
+                .then(value => {
+                    specifiedSong = JSON.parse(value).songs[0];
+                    cache.set(`${artistId}/${songId}`, specifiedSong);
+                    resolve(specifiedSong);
+                })
+                .catch(err => reject(err));
+        } else {
+            resolve(specifiedSong);
+        }
+    });
+};
+
+const getSpecifiedSongDescription = (artistId, songId) => {
+    return new Promise((resolve, reject) => {
+        let description = cache.get(`${artistId}/${songId}/genius`);
+        if (description === undefined) {
+            makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`)
+                .then(value => {
+                    description = JSON.parse(value).songs[0].description.plain;
+                    cache.set(`${artistId}/${songId}/genius`, description);
+                    resolve(description);
+                })
+                .catch(() => {
+                    description = ''
+                    cache.set(`${artistId}/${songId}/genius`, description);
+                    resolve(description);
+                });
+        } else {
+            resolve(description);
+        }
+    });
+};
+
+
+
 router.use((req, res, next) => {
     const history = memoryHistory, location = req.url;
     match({routes, history, location}, (err, redirect, props) => {
@@ -74,33 +161,32 @@ router.use((req, res, next) => {
             res.redirect(302, redirect.pathname + redirect.search);
         } else {
             if (props.params.artistId && props.params.songId) {
-                getSpecifiedSongAndRandomSongs(props, res, next);
+                renderSpecifiedSongAndRandomSongs(props, res, next);
             } else {
-                getRandomSongs(props, res, next);
+                renderRandomSongs(props, res, next);
             }
         }
     });
 });
 
-const getSpecifiedSongAndRandomSongs = (props, res, next) => {
+const renderSpecifiedSongAndRandomSongs = (props, res, next) => {
     const {artistId, songId} = props.params;
     const promises = [
-        fileContents('stats.json'),
-        makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}`),
-        makeRequest(`${API_HOST}/v1/songs`),
-        makeRequest(`${API_HOST}/v1/artists/${artistId}/songs/${songId}/genius`),
+        getBundleHash(),
+        getSpecifiedSong(artistId, songId),
+        getRandomSongs(),
+        getSpecifiedSongDescription(artistId, songId),
     ];
     Promise.all(promises)
         .then(values => {
             try {
-                values = values.map(JSON.parse);
-                const hash = values[0].hash;
-                const specifiedSong = values[1].songs[0];
-                const randomSongs = values[2].songs;
-                const description = values[3].songs[0].description.plain;
+                const bundleHash = values[0];
+                const specifiedSong = values[1];
+                const randomSongs = values[2];
+                const description = values[3];
                 const [head, app] = [
                     <Head
-                        hash={hash}
+                        bundleHash={bundleHash}
                         title={`Spool - ${specifiedSong.artist} - ${specifiedSong.song}`}
                         description={description}
                         image={specifiedSong.artwork_url}
@@ -110,7 +196,7 @@ const getSpecifiedSongAndRandomSongs = (props, res, next) => {
                     <RouterContext {...props} />,
                 ].map(ReactDOMServer.renderToString);
                 const videos = [specifiedSong].concat(randomSongs);
-                res.render('index', {head, app, videos, hash});
+                res.render('index', {head, app, videos, bundleHash});
             } catch (err) {
                 next(err);
             }
@@ -118,22 +204,17 @@ const getSpecifiedSongAndRandomSongs = (props, res, next) => {
         .catch(next);
 };
 
-const getRandomSongs = (props, res, next) => {
-    const promises = [
-        fileContents('stats.json'),
-        makeRequest(`${API_HOST}/v1/songs`),
-    ];
+const renderRandomSongs = (props, res, next) => {
+    const promises = [getBundleHash(), getRandomSongs()];
     Promise.all(promises)
         .then(values => {
             try {
-                values = values.map(JSON.parse);
-                const hash = values[0].hash;
-                const videos = values[1].songs;
+                const [bundleHash, videos] = values;
                 const [head, app] = [
-                    <Head hash={hash} />,
+                    <Head bundleHash={bundleHash} />,
                     <RouterContext {...props} />,
                 ].map(ReactDOMServer.renderToString);
-                res.render('index', {head, app, videos, hash});
+                res.render('index', {head, app, videos, bundleHash});
             } catch (err) {
                 next(err);
             }
@@ -170,21 +251,20 @@ router.get('/sitemap.xml', (req, res, next) => {
 router.use(express.static(__dirname + '/../public'));
 
 router.use((req, res, next) => {
-    const promises = [
-        fileContents('stats.json'),
-        makeRequest(`${API_HOST}/v1/songs`),
-    ];
+    const promises = [getBundleHash(), getRandomSongs()];
     Promise.all(promises)
         .then(values => {
             try {
-                values = values.map(JSON.parse);
-                const hash = values[0].hash;
-                const videos = values[1].songs;
+                const [bundleHash, videos] = values;
                 const title = 'Spool - Not Found';
                 const description = 'Spool - Not Found';
                 const heading = 'Not Found';
                 const head = ReactDOMServer.renderToString(
-                    <Head hash={hash} title={title} description={description} />
+                    <Head
+                        bundleHash={bundleHash}
+                        title={title}
+                        description={description}
+                    />
                 );
                 res.status(404).render('error', {head, videos, heading});
             } catch (err) {
@@ -196,20 +276,19 @@ router.use((req, res, next) => {
 
 router.use((err, req, res, next) => {
     console.error(err);
-    const promises = [
-        fileContents('stats.json'),
-        makeRequest(`${API_HOST}/v1/songs`),
-    ];
+    const promises = [getBundleHash(), getRandomSongs()];
     Promise.all(promises)
         .then(values => {
-            values = values.map(JSON.parse);
-            const hash = values[0].hash;
-            const videos = values[1].songs;
+            const [bundleHash, videos] = values;
             const title = 'Spool - Server Error';
             const description = 'Spool - Server Error';
             const heading = 'Server Error';
             const head = ReactDOMServer.renderToString(
-                <Head hash={hash} title={title} description={description} />
+                <Head
+                    bundleHash={bundleHash}
+                    title={title}
+                    description={description}
+                />
             );
             res.status(500).render('error', {head, videos, heading});
         });

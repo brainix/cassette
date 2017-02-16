@@ -42,7 +42,7 @@ export default class Head extends React.PureComponent {
                 <title dangerouslySetInnerHTML={{__html: title}} />
                 <meta name='description' content={description} />
                 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
-                <link rel='stylesheet' href={`/${this.props.hash}.style.css`} />
+                <link rel='stylesheet' href={`/${this.props.bundleHash}.style.css`} />
                 <link rel='icon' href='/icon.png' />
 
                 <meta property='og:title' content={title} />

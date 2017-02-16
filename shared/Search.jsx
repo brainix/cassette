@@ -41,7 +41,11 @@ String.prototype.htmlToText = function () {
 }
 
 Array.prototype.choice = function () {
-        return this[Math.floor(Math.random() * this.length)];
+    return this[Math.floor(Math.random() * this.length)];
+};
+
+Array.prototype.shuffle = function() {
+    return this.sort((a, b) => [-1, 0, 1].choice());
 };
 
 
