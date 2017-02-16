@@ -62,7 +62,7 @@ const runInstance = () => {
 if (process.env.NODE_ENV === 'production') {
     if (cluster.isMaster) {
         cluster.on('exit', () => cluster.fork());
-        for (var i = 0; i < NUM_WORKERS; i++) {
+        for (let i = 0; i < NUM_WORKERS; i++) {
             cluster.fork();
         }
     } else if (cluster.isWorker) {
