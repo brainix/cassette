@@ -36,7 +36,7 @@ var router = require('./router.jsx');
 
 
 var PORT = process.env.PORT || 8080;
-var NUM_WORKERS = process.env.WEB_CONCURRENCY || 1;
+var NUM_WORKERS = process.env.WEB_CONCURRENCY || 2;
 var app = express();
 
 if (process.env.NODE_ENV === 'production') {
@@ -60,17 +60,13 @@ function runInstance() {
 
 
 
-if (process.env.NODE_ENV === 'production') {
-    if (cluster.isMaster) {
-        cluster.on('exit', function () {
-            cluster.fork();
-        });
-        for (i = 0; i < NUM_WORKERS; i++) {
-            cluster.fork();
-        }
-    } else if (cluster.isWorker) {
-        runInstance();
+if (cluster.isMaster) {
+    cluster.on('exit', function () {
+        cluster.fork();
+    });
+    for (i = 0; i < NUM_WORKERS; i++) {
+        cluster.fork();
     }
-} else {
+} else if (cluster.isWorker) {
     runInstance();
 }
