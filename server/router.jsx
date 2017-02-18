@@ -43,6 +43,21 @@ if (process.env.NODE_ENV === 'production') {
     [API_HOST, WEB_HOST] = ['http://localhost:5000', 'http://localhost:8080'];
 }
 
+const SECURITY_HEADERS = {
+    "X-XSS-Protection": "1; mode=block",
+    "Content-Security-Policy": [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline'",
+        `connect-src ${API_HOST}`,
+        "media-src *",
+        "font-src https://themes.googleusercontent.com",
+    ].join("; "),
+    "Strict-Transport-Security": "max-age=31536000; includeSubdomains",
+    "X-Frame-Options": "deny",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+};
+
 
 
 const fileContents = (fileName, encoding) => {
@@ -231,21 +246,9 @@ router.get('/sitemap.xml', (req, res, next) => {
 });
 
 router.use((req, res, next) => {
-    res.setHeader("X-XSS-Protection", "1; mode=block");
-    res.setHeader("Content-Security-Policy", [
-        "default-src 'self'",
-        "script-src 'self' 'unsafe-inline'",
-        `connect-src ${API_HOST}`,
-        "media-src *",
-        "font-src https://themes.googleusercontent.com",
-    ].join("; "));
-    res.setHeader("Strict-Transport-Security", [
-        "max-age=31536000",
-        "includeSubdomains",
-    ].join("; "));
-    res.setHeader("X-Frame-Options", "deny");
-    res.setHeader("X-Content-Type-Options", "nosniff");
-    res.setHeader("Referrer-Policy", "no-referrer");
+    for (let key in SECURITY_HEADERS) {
+        res.setHeader(key, SECURITY_HEADERS[key]);
+    }
     next();
 });
 
