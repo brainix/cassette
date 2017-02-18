@@ -32,3 +32,6 @@ run:
 
 clean:
 	rm -rf {public/*.bundle.js,public/*.style.css,stats.json}
+
+uninstall:
+	npm uninstall `ls -1 node_modules | tr '/\n' ' '`
