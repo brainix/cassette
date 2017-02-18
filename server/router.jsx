@@ -232,7 +232,7 @@ router.get('/sitemap.xml', (req, res, next) => {
 
 router.use((req, res, next) => {
     res.setHeader('X-XSS-Protection', '1; mode=block');
-    res.setHeader('Content-Security-Policy', `default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src ${API_HOST}; media-src http://video.itunes.apple.com`);
+    res.setHeader('Content-Security-Policy', `default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src ${API_HOST}; media-src http://video.itunes.apple.com; font-src https://themes.googleusercontent.com`);
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubdomains;');
     res.setHeader('X-Frame-Options', 'deny');
     res.setHeader('X-Content-Type-Options', 'nosniff');
