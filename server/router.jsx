@@ -198,25 +198,6 @@ const renderSpecifiedSongAndRandomSongs = (props, res, next) => {
 
 
 
-router.use((req, res, next) => {
-    const history = memoryHistory, location = req.url;
-    match({routes, history, location}, (err, redirect, props) => {
-        if (err) {
-            next(err);
-        } else if (!props) {
-            next();
-        } else if (redirect) {
-            res.redirect(302, redirect.pathname + redirect.search);
-        } else {
-            if (props.params.artistId && props.params.songId) {
-                renderSpecifiedSongAndRandomSongs(props, res, next);
-            } else {
-                renderRandomSongs(props, res, next);
-            }
-        }
-    });
-});
-
 router.get(['/robots.txt', '/humans.txt'], (req, res, next) => {
     makeRequest(`${API_HOST}${req.path}`)
         .then(body => {
@@ -247,6 +228,35 @@ router.get('/sitemap.xml', (req, res, next) => {
             res.type('application/xml').send(body);
         })
         .catch(next);
+});
+
+router.use((req, res, next) => {
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    // res.setHeader('Content-Security-Policy', `default-src ${process.env.NODE_ENV === 'production' ? 'https:' : 'http:'}`);
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubdomains;');
+    res.setHeader('X-Frame-Options', 'deny');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    next();
+});
+
+router.use((req, res, next) => {
+    const history = memoryHistory, location = req.url;
+    match({routes, history, location}, (err, redirect, props) => {
+        if (err) {
+            next(err);
+        } else if (!props) {
+            next();
+        } else if (redirect) {
+            res.redirect(302, redirect.pathname + redirect.search);
+        } else {
+            if (props.params.artistId && props.params.songId) {
+                renderSpecifiedSongAndRandomSongs(props, res, next);
+            } else {
+                renderRandomSongs(props, res, next);
+            }
+        }
+    });
 });
 
 router.use(express.static(__dirname + '/../public', {
