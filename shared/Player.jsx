@@ -201,7 +201,7 @@ class Video extends React.PureComponent {
     onMouseDown(eventObject) {
         if (this.props.state === 'playing') {
             if (eventObject.target.paused) {
-                eventObject.target.play();
+                eventObject.target.play().catch(() => this.props.nextVideo());
             } else if (document.activeElement === document.body) {
                 this.props.nextVideo();
             } else {
