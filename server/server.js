@@ -20,28 +20,29 @@
 
 
 
-import cluster from 'cluster';
+var cluster = require('cluster');
 
-import 'newrelic';
-import express from 'express/lib/express';
-import compression from 'compression';
-import webpack from 'webpack/lib/webpack';
-import webpackDevMiddleware from 'webpack-dev-middleware';
-import webpackHotMiddleware from 'webpack-hot-middleware';
+require('babel-core/register');
+require('newrelic');
+var express = require('express/lib/express');
+var compression = require('compression');
+var webpack = require('webpack/lib/webpack');
+var webpackDevMiddleware = require('webpack-dev-middleware');
+var webpackHotMiddleware = require('webpack-hot-middleware');
 
-import config from '../webpack.config.babel';
-import router from './router.jsx';
+var config = require('../webpack.config.babel');
+var router = require('./router.jsx');
 
 
 
-const PORT = process.env.PORT || 8080;
-const NUM_WORKERS = process.env.WEB_CONCURRENCY || 1;
-const app = express();
+var PORT = process.env.PORT || 8080;
+var NUM_WORKERS = process.env.WEB_CONCURRENCY || 1;
+var app = express();
 
 if (process.env.NODE_ENV === 'production') {
     app.use(compression());
 } else {
-    const compiler = webpack(config);
+    var compiler = webpack(config);
     app.use(webpackDevMiddleware(compiler, {
         publicPath: config.output.publicPath,
         stats: {colors: true},
@@ -49,20 +50,22 @@ if (process.env.NODE_ENV === 'production') {
     app.use(webpackHotMiddleware(compiler));
 }
 app.set('view engine', 'pug');
-app.use(router);
+app.use(router.default);
 
-const runInstance = () => {
-    app.listen(PORT, () => {
+function runInstance() {
+    app.listen(PORT, function () {
         console.log(`Listening at: http://127.0.0.1:${PORT} (${process.pid})`);
     });
-};
+}
 
 
 
 if (process.env.NODE_ENV === 'production') {
     if (cluster.isMaster) {
-        cluster.on('exit', () => cluster.fork());
-        for (let i = 0; i < NUM_WORKERS; i++) {
+        cluster.on('exit', function () {
+            cluster.fork();
+        });
+        for (i = 0; i < NUM_WORKERS; i++) {
             cluster.fork();
         }
     } else if (cluster.isWorker) {
