@@ -190,7 +190,7 @@ const renderSpecifiedSongAndRandomSongs = (props, res, next) => {
                 res.setHeader('Expires', new Date(Date.now() + 2 * 60 * 1000).toUTCString());
                 res.render('index', {head, app, videos, bundleHash});
             } catch (err) {
-                next(err);
+                next();
             }
         })
         .catch(next);
