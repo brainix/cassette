@@ -52,21 +52,19 @@ if (process.env.NODE_ENV === 'production') {
 app.set('view engine', 'pug');
 app.use(router.default);
 
-function runInstance() {
-    app.listen(PORT, function () {
-        console.log(`Listening at: http://127.0.0.1:${PORT} (${process.pid})`);
-    });
-}
-
 
 
 if (cluster.isMaster) {
     cluster.on('exit', function () {
         cluster.fork();
     });
+
+    var i;
     for (i = 0; i < NUM_WORKERS; i++) {
         cluster.fork();
     }
 } else if (cluster.isWorker) {
-    runInstance();
+    app.listen(PORT, function () {
+        console.log(`Listening at: http://127.0.0.1:${PORT} (${process.pid})`);
+    });
 }
