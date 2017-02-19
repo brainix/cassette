@@ -20,6 +20,7 @@ upgrade:
 	brew update
 	brew upgrade
 	brew cleanup
+	npm prune
 	-npm outdated
 	npm update --save-dev
 	npm update --save
