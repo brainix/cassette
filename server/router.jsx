@@ -147,11 +147,9 @@ const getSpecifiedSongDescription = (artistId, songId) => {
 };
 
 const renderRandomSongs = (props, res, next) => {
-    const promises = [getBundleHash(), getRandomSongs()];
-    Promise.all(promises)
-        .then(values => {
+    Promise.all([getBundleHash(), getRandomSongs()])
+        .then(([bundleHash, videos]) => {
             try {
-                const [bundleHash, videos] = values;
                 const [head, app] = [
                     <Head bundleHash={bundleHash} />,
                     <RouterContext {...props} />,
@@ -175,12 +173,8 @@ const renderSpecifiedSongAndRandomSongs = (props, res, next) => {
         getRandomSongs(),
     ];
     Promise.all(promises)
-        .then(values => {
+        .then(([bundleHash, specifiedSong, description, randomSongs]) => {
             try {
-                const bundleHash = values[0];
-                const specifiedSong = values[1];
-                const description = values[2];
-                const randomSongs = values[3];
                 const [head, app] = [
                     <Head
                         bundleHash={bundleHash}
@@ -204,16 +198,6 @@ const renderSpecifiedSongAndRandomSongs = (props, res, next) => {
 };
 
 
-
-router.get(['/robots.txt', '/humans.txt'], (req, res, next) => {
-    makeRequest(`${API_HOST}${req.path}`)
-        .then(body => {
-            res.setHeader('Cache-Control', `public, max-age=${24 * 60 * 60}`);
-            res.setHeader('Expires', new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString());
-            res.type('text/plain').send(body);
-        })
-        .catch(next);
-});
 
 router.get('/sitemap.xml', (req, res, next) => {
     makeRequest(`${API_HOST}/sitemap.xml`)
@@ -269,11 +253,9 @@ router.use(express.static(__dirname + '/../public', {
 }));
 
 router.use((req, res, next) => {
-    const promises = [getBundleHash(), getRandomSongs()];
-    Promise.all(promises)
-        .then(values => {
+    Promise.all([getBundleHash(), getRandomSongs()])
+        .then(([bundleHash, videos]) => {
             try {
-                const [bundleHash, videos] = values;
                 const title = 'Spool - Not Found';
                 const description = 'Spool - Not Found';
                 const heading = 'Not Found';
@@ -294,10 +276,8 @@ router.use((req, res, next) => {
 
 router.use((err, req, res, next) => {
     console.error(err);
-    const promises = [getBundleHash(), getRandomSongs()];
-    Promise.all(promises)
-        .then(values => {
-            const [bundleHash, videos] = values;
+    Promise.all([getBundleHash(), getRandomSongs()])
+        .then(([bundleHash, videos]) => {
             const title = 'Spool - Server Error';
             const description = 'Spool - Server Error';
             const heading = 'Server Error';
