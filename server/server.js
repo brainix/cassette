@@ -50,6 +50,7 @@ if (process.env.NODE_ENV === 'production') {
     app.use(webpackHotMiddleware(compiler));
 }
 app.set('view engine', 'pug');
+app.disable('x-powered-by');
 app.use(router.default);
 
 
