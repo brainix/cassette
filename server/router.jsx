@@ -60,61 +60,53 @@ const SECURITY_HEADERS = {
 
 
 
-const fileContents = (fileName, encoding) => {
-    return new Promise((resolve, reject) => {
-        fs.readFile(fileName, encoding, (err, data) => {
-            (err ? reject : resolve)(err ? err : data);
-        });
+const fileContents = (fileName, encoding) => new Promise((resolve, reject) => {
+    fs.readFile(fileName, encoding, (err, data) => {
+        (err ? reject : resolve)(err ? err : data);
     });
-};
+});
 
-const makeRequest = url => {
-    return new Promise((resolve, reject) => {
-        const http = require(url.startsWith('https') ? 'https' : 'http');
-        http.get(url, response => {
-            const chunks = [];
-            response.on('data', chunk => chunks.push(chunk));
-            response.on('end', () => resolve(chunks.join('')));
-        })
-        .on('error', reject);
-    });
-};
+const makeRequest = url => new Promise((resolve, reject) => {
+    const http = require(url.startsWith('https') ? 'https' : 'http');
+    http.get(url, response => {
+        const chunks = [];
+        response.on('data', chunk => chunks.push(chunk));
+        response.on('end', () => resolve(chunks.join('')));
+    })
+    .on('error', reject);
+});
 
 
 
-const getBundleHash = () => {
-    return new Promise((resolve, reject) => {
-        let bundleHash = cache.get('hash');
-        if (bundleHash === undefined) {
-            fileContents('stats.json')
-                .then(value => {
-                    bundleHash = JSON.parse(value).hash;
-                    cache.set('hash', bundleHash);
-                    resolve(bundleHash);
-                })
-                .catch(err => reject(err));
-        } else {
-            resolve(bundleHash);
-        }
-    });
-};
+const getBundleHash = () => new Promise((resolve, reject) => {
+    let bundleHash = cache.get('hash');
+    if (bundleHash === undefined) {
+        fileContents('stats.json')
+            .then(value => {
+                bundleHash = JSON.parse(value).hash;
+                cache.set('hash', bundleHash);
+                resolve(bundleHash);
+            })
+            .catch(err => reject(err));
+    } else {
+        resolve(bundleHash);
+    }
+});
 
-const getRandomSongs = () => {
-    return new Promise((resolve, reject) => {
-        let randomSongs = cache.get('random');
-        if (randomSongs === undefined) {
-            makeRequest(`${API_HOST}/v1/songs`)
-                .then(value => {
-                    randomSongs = JSON.parse(value).songs;
-                    cache.set('random', randomSongs, 30 * 1000);
-                    resolve(randomSongs);
-                })
-                .catch(err => reject(err));
-        } else {
-            resolve(randomSongs);
-        }
-    });
-};
+const getRandomSongs = () => new Promise((resolve, reject) => {
+    let randomSongs = cache.get('random');
+    if (randomSongs === undefined) {
+        makeRequest(`${API_HOST}/v1/songs`)
+            .then(value => {
+                randomSongs = JSON.parse(value).songs;
+                cache.set('random', randomSongs, 30 * 1000);
+                resolve(randomSongs);
+            })
+            .catch(err => reject(err));
+    } else {
+        resolve(randomSongs);
+    }
+});
 
 const getSpecifiedSong = (artistId, songId) => {
     return new Promise((resolve, reject) => {
