@@ -1,0 +1,8 @@
+# Asimov
+Disallow: /harm/to/humans
+Disallow: /ignoring/human/orders
+Disallow: /harm/to/self
+
+# Yoshimi
+Disallow: /robots/eat/me
+Disallow: /robots/defeat/me
