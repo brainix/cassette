@@ -51,7 +51,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 app.set('view engine', 'pug');
 app.disable('x-powered-by');
-app.use(router.default);
+app.use(router);
 
 
 
