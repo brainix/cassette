@@ -67,7 +67,7 @@ const fileContents = (fileName, encoding) => new Promise((resolve, reject) => {
 });
 
 const makeRequest = url => new Promise((resolve, reject) => {
-    const http = require(url.startsWith('https') ? 'https' : 'http');
+    const http = require(url.split(':', 1)[0]);
     http.get(url, response => {
         const chunks = [];
         response.on('data', chunk => chunks.push(chunk));
@@ -75,6 +75,15 @@ const makeRequest = url => new Promise((resolve, reject) => {
     })
     .on('error', reject);
 });
+
+const streamRequest = (url, res) => {
+    const http = require(url.split(':', 1)[0]);
+    http.get(url, response => {
+        response.on('data', chunk => res.write(chunk));
+        response.on('end', () => res.end());
+    })
+    .on('error', () => res.end());
+};
 
 
 
@@ -200,25 +209,10 @@ const renderSpecifiedSongAndRandomSongs = (props, res, next) => {
 
 
 router.get('/sitemap.xml', (req, res, next) => {
-    makeRequest(`${API_HOST}/sitemap.xml`)
-        .then(body => {
-            let find, replace;
-            if (process.env.NODE_ENV === 'production') {
-                find = /https:\/\/api.spool.tv\//g;
-                replace = 'https://spool.tv/';
-            } else {
-                find = /http:\/\/localhost:5000\//g;
-                replace = 'http://localhost:8080/';
-            }
-            body = body.replace(find, replace)
-                .replace(/\/v1\//g, '/')
-                .replace(/\/artists\//g, '/')
-                .replace(/\/songs\//g, '/');
-            res.setHeader('Cache-Control', `public, max-age=${24 * 60 * 60}`);
-            res.setHeader('Expires', new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString());
-            res.type('application/xml').send(body);
-        })
-        .catch(next);
+    res.setHeader('Cache-Control', `public, max-age=${24 * 60 * 60}`);
+    res.setHeader('Expires', new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString());
+    res.type('application/xml');
+    streamRequest(`${API_HOST}/sitemap.xml`, res);
 });
 
 router.use((req, res, next) => {
