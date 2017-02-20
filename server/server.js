@@ -59,9 +59,7 @@ if (cluster.isMaster) {
     cluster.on('exit', function () {
         cluster.fork();
     });
-
-    var i;
-    for (i = 0; i < NUM_WORKERS; i++) {
+    for (var i = 0; i < NUM_WORKERS; i++) {
         cluster.fork();
     }
 } else if (cluster.isWorker) {
