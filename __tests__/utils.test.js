@@ -22,7 +22,7 @@
 
 import path from 'path';
 
-import {fileContents} from '../server/utils.js';
+import {fileContents, shellOutput} from '../server/utils.js';
 
 
 
@@ -35,6 +35,15 @@ describe('fileContents()', () => {
                 expect(contents).toContain('Raj');
                 expect(contents).toContain('brainix@gmail.com');
                 expect(contents).toContain('@brainix');
+            });
+    });
+});
+
+describe('shellOutput()', () => {
+    it('tests shell command output', () => {
+        return shellOutput('echo Hello, World!')
+            .then(stdout => {
+                expect(stdout.trimRight()).toEqual('Hello, World!');
             });
     });
 });
