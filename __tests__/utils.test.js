@@ -22,28 +22,27 @@
 
 import path from 'path';
 
-import {fileContents, shellOutput} from '../server/utils.js';
+import {fileContents, shellOutput, makeRequest} from '../server/utils.js';
 
 
 
 describe('fileContents()', () => {
     it('tests reading a file', () => {
-        const filename = path.join('public', 'humans.txt');
-        return fileContents(filename)
-            .then(buffer => {
-                const contents = buffer.toString();
-                expect(contents).toContain('Raj');
-                expect(contents).toContain('brainix@gmail.com');
-                expect(contents).toContain('@brainix');
-            });
+        return fileContents(path.join('public', 'humans.txt'))
+            .then(buffer => expect(buffer.toString()).toContain('Raj'));
     });
 });
 
 describe('shellOutput()', () => {
     it('tests shell command output', () => {
-        return shellOutput('echo Hello, World!')
-            .then(stdout => {
-                expect(stdout.trimRight()).toEqual('Hello, World!');
-            });
+        return shellOutput('echo hi')
+            .then(stdout => expect(stdout.trimRight()).toEqual('hi'));
+    });
+});
+
+describe('makeRequest()', () => {
+    it('tests making an HTTP request', () => {
+        return makeRequest('https://api.spool.tv/v1/canary')
+            .then(body => expect(JSON.parse(body)).toEqual({message: 'OK'}));
     });
 });
