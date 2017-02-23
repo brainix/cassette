@@ -32,9 +32,6 @@ upgrade:
 	git status
 	git diff
 
-run:
-	npm run start
-
 clean:
 	rm -rf {public/*.bundle.js,public/*.style.css,stats.json}
 
