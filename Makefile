@@ -7,18 +7,22 @@
 
 
 
+install upgrade: formulae := {node}
+
+
+
 install:
 	-xcode-select --install
 	command -v brew >/dev/null 2>&1 || \
 		ruby -e "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 	brew analytics off
 	brew analytics regenerate-uuid
-	brew install node
+	brew install $(formulae)
 	npm install
 
 upgrade:
 	brew update
-	brew upgrade
+	-brew upgrade $(formulae)
 	brew cleanup
 	npm prune
 	-npm outdated
