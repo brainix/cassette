@@ -1,5 +1,5 @@
 {
-  "ignore": ["public/*", "stats.json"],
+  "ignore": ["__tests__", "public/*", "stats.json"],
   "verbose": true,
   "ext": "js jsx scss"
 }

@@ -29,6 +29,7 @@ import {memoryHistory, match, RouterContext} from 'react-router';
 import LRUCache from 'lru-cache/lib/lru-cache';
 
 import routes from '../shared/routes.jsx';
+import {fileContents, makeRequest} from './utils.js';
 import Head from './Head.jsx';
 
 
@@ -59,22 +60,6 @@ const SECURITY_HEADERS = {
 };
 
 
-
-const fileContents = (fileName, encoding) => new Promise((resolve, reject) => {
-    fs.readFile(fileName, encoding, (err, data) => {
-        (err ? reject : resolve)(err ? err : data);
-    });
-});
-
-const makeRequest = url => new Promise((resolve, reject) => {
-    const http = require(url.split(':', 1)[0]);
-    http.get(url, response => {
-        const chunks = [];
-        response.on('data', chunk => chunks.push(chunk));
-        response.on('end', () => resolve(chunks.join('')));
-    })
-    .on('error', reject);
-});
 
 const streamRequest = (url, res) => {
     const http = require(url.split(':', 1)[0]);
