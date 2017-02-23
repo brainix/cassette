@@ -27,8 +27,6 @@ require('newrelic');
 var express = require('express/lib/express');
 var compression = require('compression');
 var webpack = require('webpack/lib/webpack');
-var webpackDevMiddleware = require('webpack-dev-middleware');
-var webpackHotMiddleware = require('webpack-hot-middleware');
 
 var config = require('../webpack.config.babel');
 var router = require('./router.jsx');
@@ -42,6 +40,8 @@ var app = express();
 if (process.env.NODE_ENV === 'production') {
     app.use(compression());
 } else {
+    var webpackDevMiddleware = require('webpack-dev-middleware');
+    var webpackHotMiddleware = require('webpack-hot-middleware');
     var compiler = webpack(config);
     app.use(webpackDevMiddleware(compiler, {
         publicPath: config.output.publicPath,
