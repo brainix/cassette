@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
- |  version.test.js                                                          |
+ |  versions.test.js                                                         |
  |                                                                           |
  |  Copyright © 2016-2017, Rajiv Bakulesh Shah, original author.             |
  |                                                                           |
@@ -20,7 +20,7 @@
 
 
 
-import {shellOutput, fileContents} from '../server/utils.js';
+import {fileContents, shellOutput} from '../server/utils.js';
 
 
 
@@ -30,7 +30,7 @@ describe('Node.js version', () => {
             shellOutput('node --version'),
             fileContents('package.json'),
         ];
-        Promise.all(promises)
+        return Promise.all(promises)
             .then(([installedVersion, data]) => {
                 const specifiedVersion = `v${JSON.parse(data).engines.node}`;
                 expect(installedVersion).toEqual(specifiedVersion);
@@ -44,7 +44,7 @@ describe('npm version', () => {
             shellOutput('npm --version'),
             fileContents('package.json'),
         ];
-        Promise.all(promises)
+        return Promise.all(promises)
             .then(([installedVersion, data]) => {
                 const specifiedVersion = JSON.parse(data).engines.npm;
                 expect(installedVersion).toEqual(specifiedVersion);
