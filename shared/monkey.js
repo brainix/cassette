@@ -38,8 +38,8 @@ Array.prototype.choice = function () {
 };
 
 Array.prototype.shuffle = function() {
-    for (let current = this.length; current > 0; current--) {
-        let random = Math.floor(Math.random() * current);
+    for (let current = this.length - 1; current > 0; current--) {
+        let random = Math.floor(Math.random() * (current + 1));
         [this[current], this[random]] = [this[random], this[current]];
     }
     return this;

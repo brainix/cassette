@@ -33,7 +33,7 @@ describe('Node.js version', () => {
         return Promise.all(promises)
             .then(([installedVersion, data]) => {
                 const specifiedVersion = `v${JSON.parse(data).engines.node}`;
-                expect(installedVersion).toEqual(specifiedVersion);
+                expect(installedVersion).toBe(specifiedVersion);
             });
     });
 });
@@ -47,7 +47,7 @@ describe('npm version', () => {
         return Promise.all(promises)
             .then(([installedVersion, data]) => {
                 const specifiedVersion = JSON.parse(data).engines.npm;
-                expect(installedVersion).toEqual(specifiedVersion);
+                expect(installedVersion).toBe(specifiedVersion);
             });
     });
 });

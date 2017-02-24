@@ -36,7 +36,7 @@ describe('fileContents()', () => {
 describe('shellOutput()', () => {
     it('tests shell command output', () => {
         return shellOutput('echo hi')
-            .then(stdout => expect(stdout.trimRight()).toEqual('hi'));
+            .then(stdout => expect(stdout.trimRight()).toBe('hi'));
     });
 });
 
