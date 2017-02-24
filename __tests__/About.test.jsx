@@ -33,6 +33,5 @@ describe('About', () => {
         ReactDOM.render(<About videos={[]} />, div);
         expect(document.title).toBe('Spool - About Me');
         expect(div.innerHTML).toContain('<h1>About Me</h1>');
-        expect(div.innerHTML).toContain('<h2>What is Spool?</h2>');
     });
 });
