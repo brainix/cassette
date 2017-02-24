@@ -29,7 +29,7 @@ String.prototype.htmlToText = function () {
     return this.replace(/<[^>]*\/?>/g, '')      // HTML open and self-closing tags
         .replace(/<\/[a-z]*>/ig, '')            // HTML close tags
         .replace(/\&mdash;/ig, '-');
-}
+};
 
 
 
